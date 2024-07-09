@@ -1,6 +1,6 @@
-import { CursorPosition, Vim } from "../vim/vim"
+import { Vim } from "../vim/vim"
 
-export const incrementLineNumber = (vim: Vim, resetIndex: boolean, count: number = 1, mode: "relative" | "absolute" = "relative"): CursorPosition => {
+export const incrementLineNumber = (vim: Vim, resetIndex: boolean, count: number = 1, mode: "relative" | "absolute" = "relative"): Vim.CursorPosition => {
   const startLine = mode == "relative" ? vim.cursorPos.startLine + count : count
   const endLine = mode == "relative" ? vim.cursorPos.endLine + count : count
 

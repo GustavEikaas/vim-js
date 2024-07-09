@@ -6,35 +6,17 @@ import { incrementLineNumber } from "../helpers/increment-line-number";
 import { paste, pasteBefore } from "../helpers/paste";
 import { prependContent } from "../helpers/prepend-content";
 import { prependLine } from "../helpers/prepend-line";
+import { sendKey } from "../helpers/send-key";
 import { setLineIndex } from "../helpers/set-line-index";
+import { setMode } from "../helpers/set-mode";
 import { createSubscriptionChannel } from "../helpers/subscribe";
 import { imap } from "../mappings/imap";
 import { nmap } from "../mappings/nmap";
 import { vmap } from "../mappings/vmap";
 import { VimEvent } from "./events";
 
-export type VimMode = "Normal" | "Insert" | "Terminal" | "Visual" | "Replace" | "V-Block"
-
-type ModifierPayload = {
+export type WildcardPayload = {
   range?: number | undefined;
-}
-export type Mapping = {
-  /** An array of chars, * indicates wildcard */
-  seq: string[];
-  /** A list of modifiers that apply to the mapping */
-  modifiers?: ["range"];
-  action: (vim: Vim, modifier: ModifierPayload) => void;
-}
-
-export type MappingReturn = Partial<Pick<Vim, "cursorPos" | "content" | "clipboard">>;
-
-export type CursorPosition = {
-  startLine: number;
-  endLine: number;
-  startIndex: number;
-  endIndex: number;
-  /** When jumping lines up and down cursor position will adjust to EOL if the next line is shorter than the previous */
-  offset: number;
 }
 
 type Clipboard = {
@@ -45,14 +27,14 @@ type Clipboard = {
 }
 
 export type Vim = {
-  lastKeys: string[];
+  lastKeys: Vim.SequenceHistory[];
   content: string[];
-  mode: VimMode;
-  cursorPos: CursorPosition;
+  mode: Vim.Mode;
+  cursorPos: Vim.CursorPosition;
   clipboard: Clipboard;
-  nMap: Mapping[];
-  vMap: Mapping[];
-  iMap: Mapping[];
+  nMap: Vim.Mapping[];
+  vMap: Vim.Mapping[];
+  iMap: Vim.Mapping[];
 
   /** getCurrentLine: () =>  \[line, index, lines\]*/
   getCurrentLine: () => [string, number, string[]];
@@ -66,10 +48,10 @@ export type Vim = {
   // Setters
   setLineNumber: (resetX: boolean, count?: number, mode?: "relative" | "absolute") => void;
   setLineIndex: (count?: number, mode?: "relative" | "absolute") => void;
-  sendKey: (key: string) => void;
+  sendKey: (key: string, modifiers: Vim.KeyModifiers) => void;
   setContent: (val: string[]) => Readonly<Vim>
-  setMode: (mode: VimMode) => Readonly<Vim>
-  setCursorPosition: (cursorPosition: CursorPosition) => Readonly<Vim>
+  setMode: (mode: Vim.Mode) => Readonly<Vim>
+  setCursorPosition: (cursorPosition: Vim.CursorPosition) => Readonly<Vim>
   undoContentChange: VoidFunction
 
   // Subscribers
@@ -78,127 +60,7 @@ export type Vim = {
 
 type SubscriberEventCb = (ev: VimEvent) => void;
 
-
-function tryMatchSequence(mapping: Mapping, keys: string[]): false | { mapping: Mapping, modifier: ModifierPayload } {
-  const reversed = mapping.seq.toReversed()
-  const reversedKeys = keys.toReversed()
-
-  const isValidMapping = reversed.every((s, i) => {
-    return s === reversedKeys[i]
-  })
-
-  if (!isValidMapping) return false;
-
-  const possibleModifier = reversedKeys.at(reversed.length);
-  const possibleNumbericModifier = Number(possibleModifier)
-
-  //TODO: Handle negative numbers
-  if (mapping.modifiers?.includes("range") && !isNaN(possibleNumbericModifier)) {
-    const totalNumber = reversedKeys.slice(reversed.length + 1).reduce((acc, curr) => {
-      if (!isNaN(Number(curr))) {
-        //Its reversed
-        return Number(`${curr}${acc}`)
-      }
-      return acc
-    }, possibleNumbericModifier)
-
-    return { mapping, modifier: { range: totalNumber } };
-  }
-
-  return { mapping, modifier: {} };
-}
-
 export const createVimInstance = (): Readonly<Vim> => {
-
-  function executeMapping(mapping: Mapping, modifier: ModifierPayload) {
-    mapping?.action(vim, modifier)
-    vim.lastKeys = []
-    notify({ event: "OnMappingExecuted", data: {} })
-  }
-
-  function matchMapping(map: Mapping[], vim: Vim) {
-    const init = {
-      found: false,
-    } as {
-      found: boolean;
-      mapping?: Mapping;
-      modifier?: ModifierPayload;
-    }
-    const value = map.reduce((res, curr) => {
-      if (res.found) {
-        return res;
-      }
-
-      const mapping = tryMatchSequence(curr, vim.lastKeys)
-      if (mapping) {
-        return {
-          found: true,
-          mapping: mapping.mapping,
-          modifier: mapping.modifier
-        }
-      }
-
-      return res;
-    }, init)
-
-    return value;
-  }
-
-
-  const handleKeyPress = () => {
-    switch (vim.mode) {
-      case "Normal": {
-        //TODO: handle more likely mappings
-        const mapping = matchMapping(vim.nMap, vim)
-        if (!mapping.mapping) return
-        console.debug(`Normal seq match [${mapping?.mapping?.seq.join(",")}]`, mapping.modifier)
-        executeMapping(mapping.mapping, mapping.modifier ?? {})
-        break;
-      }
-
-      case "Insert":
-        const mapping = matchMapping(vim.iMap, vim)
-        if (!mapping.mapping) return
-        console.debug(`Normal seq match [${mapping?.mapping?.seq.join(",")}]`, mapping.modifier)
-        executeMapping(mapping.mapping, mapping.modifier ?? {})
-        break;
-
-      case "Visual":
-      case "V-Block": {
-        const mapping = matchMapping(vim.vMap, vim)
-        if (!mapping.mapping) return
-        console.debug(`Visual seq match [${mapping?.mapping?.seq.join(",")}]`, mapping.modifier)
-        executeMapping(mapping.mapping, mapping.modifier ?? {})
-      }
-    }
-  }
-
-  function setMode(mode: VimMode, vim: Vim) {
-    switch (mode) {
-      case "Normal":
-        vim.cursorPos.endLine = vim.cursorPos.startLine
-        vim.cursorPos.endIndex = vim.cursorPos.startIndex
-        break;
-
-      case "Visual":
-        break;
-
-      case "Insert":
-        break;
-    }
-    const prevMode = vim.mode;
-    vim.mode = mode;
-    notify({ event: "OnModeChange", data: { mode, prevMode } })
-    return vim
-
-  }
-
-  function adjustCursorPosition(vim: Vim) {
-    if (!isValidCursorPosition(vim.cursorPos, vim)) {
-      vim.setLineNumber(false, -1)
-    }
-  }
-
   const { addSubscriber, notify } = createSubscriptionChannel<VimEvent>()
 
   const vim: Vim = {
@@ -236,7 +98,7 @@ export const createVimInstance = (): Readonly<Vim> => {
       return vim;
     },
     mode: "Normal",
-    setMode: (mode) => setMode(mode, vim),
+    setMode: (mode) => setMode(mode, vim, (mode, prevMode) => notify({ event: "OnModeChange", data: { mode, prevMode } })),
     cursorPos: { startLine: 0, startIndex: 0, endLine: 0, endIndex: 0, offset: 0 },
     getCurrentLine: () => [vim.content[vim.cursorPos.startLine], vim.cursorPos.startLine, vim.content],
     prependLine: (content = " ") => prependLine(vim, content),
@@ -255,11 +117,7 @@ export const createVimInstance = (): Readonly<Vim> => {
     nMap: nmap,
     vMap: vmap,
     iMap: imap,
-    sendKey: (key) => {
-      vim.lastKeys.push(key)
-      console.log(`Key reg ${key}, keys: [${vim.lastKeys.join(",")}]`)
-      handleKeyPress()
-    }
+    sendKey: (key, modifiers) => sendKey(vim, [key, modifiers], () => notify({ event: "OnMappingExecuted", data: {} }))
   }
 
   const undoRegister = {
@@ -268,6 +126,7 @@ export const createVimInstance = (): Readonly<Vim> => {
     current: [] as string[]
   }
   const controller = new AbortController()
+
   vim.addSubscriber((ev) => {
     if (ev.event === "OnModeChange" && ev.data.mode === "Normal" && ev.data.prevMode === "Insert") {
       undoRegister.isSet = true;
@@ -279,7 +138,14 @@ export const createVimInstance = (): Readonly<Vim> => {
   return vim
 }
 
-function isValidCursorPosition(cursorPosition: CursorPosition, vim: Vim): boolean {
+function adjustCursorPosition(vim: Vim) {
+  if (!isValidCursorPosition(vim.cursorPos, vim)) {
+    vim.setLineNumber(false, -1)
+  }
+}
+
+//TODO: Implement insert specific cursor pos
+function isValidCursorPosition(cursorPosition: Vim.CursorPosition, vim: Vim): boolean {
   if (vim.mode === "Normal") {
     const line = vim.content.at(cursorPosition.startLine)
     if (line == undefined) {
@@ -292,4 +158,47 @@ function isValidCursorPosition(cursorPosition: CursorPosition, vim: Vim): boolea
   }
 
   return true;
+}
+
+export namespace Vim {
+  /** The different vim modes*/
+  export type Mode = "Normal" | "Insert" | "Visual" | "V-Block"
+
+  /**
+   * A vim keymapping
+   */
+  export type Mapping = {
+    /** An array of chars */
+    seq: string[];
+    /** A list of wildcards that apply to the mapping */
+    wildcards?: ["range"];
+    /** The function to execute when the mapping is activated */
+    action: (vim: Vim, wildcard: WildcardPayload) => void;
+  }
+
+  /**
+   * The position of the Vim cursor
+   */
+  export type CursorPosition = {
+    startLine: number;
+    endLine: number;
+    startIndex: number;
+    endIndex: number;
+    /** When jumping lines up and down cursor position will adjust to EOL if the next line is shorter than the previous */
+    offset: number;
+  }
+
+  /** Indicates which key modifiers are being held down */
+  export type KeyModifiers = {
+    /** Indicates if Control key is being held down*/
+    ctrl: boolean;
+    /** Indicates if Shift key is being held down*/
+    shift: boolean;
+    /** Indicates if Alt key is being held down*/
+    alt: boolean;
+  }
+
+  export type SequenceHistory = {
+    key: string
+  } & KeyModifiers
 }

@@ -1,6 +1,6 @@
-import { Mapping } from "../vim/vim"
+import { Vim } from "../vim/vim"
 
-export const imap: Mapping[] = [
+export const imap: Vim.Mapping[] = [
   {
     seq: ["Escape"],
     action: vim => {

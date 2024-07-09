@@ -1,83 +1,37 @@
 import { useState } from "react";
-import { Challenge } from "./Terminal";
-import { Vim } from "../vim/vim";
-
-const challenges: Challenge[] = [
-  {
-    strokes: 1,
-    description: "Delete line 1",
-    content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
-    expected: "How are you?\nIm good how bout u\nman im good aswell"
-  },
-  {
-    strokes: 1,
-    description: "Navigate to end of line 1",
-    content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
-    expected: (vim: Vim) => vim.cursorPos.startLine == 0 && vim.cursorPos.startIndex == vim.content[0].length - 1
-  },
-  {
-    strokes: 1,
-    description: "Enter insert mode",
-    content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
-    expected: (vim: Vim) => vim.mode === "Insert"
-  },
-  {
-    strokes: 1,
-    description: "Enter visual mode",
-    content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
-    expected: (vim: Vim) => vim.mode === "Visual"
-  },
-  {
-    strokes: 3,
-    description: "Copy line 3",
-    content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
-    expected: (vim: Vim) => {
-      return vim.clipboard.content === "Im good how bout u\n"
-    }
-  },
-  {
-    strokes: 1,
-    description: "Create line above line 2",
-    content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
-    expected: (vim: Vim) => {
-      return vim.content.length == 5 && vim.content[1] === " ";
-    }
-  },
-  {
-    strokes: 1,
-    description: "Go to line 2",
-    content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
-    expected: (vim: Vim) => {
-      return vim.cursorPos.startLine === 1;
-    }
-  },
-  {
-    strokes: 1,
-    description: "Move cursor to the right",
-    content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
-    expected: (vim: Vim) => {
-      return vim.cursorPos.startIndex === 1
-    }
-  },
-  {
-    strokes: 1,
-    description: "Navigate to end of buffer",
-    content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
-    expected: (vim: Vim) => vim.cursorPos.startLine === vim.content.length - 1
-  }
-]
+import { Button } from "./components/Button";
+import { challenges } from './challenges/challenges'
+import { MappingsUsed } from "./components/MappingsUsed";
+import { VimChallenge } from "./VimChallenge";
 
 export function Challenges() {
   const [challengeIndex, setChallengeIndex] = useState(0)
+  const isFinished = challengeIndex == challenges.length
+  const [mappingsUsed, setMappingsUsed] = useState(0);
   const challenge = challenges[challengeIndex]
-  if (!challenge) {
-    return <div>Congratulations</div>
+
+  if (isFinished) {
+    const leastPossibleMappings = challenges.reduce((acc, curr) => acc + curr.strokes, 0 as number)
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+        <h2>Finished</h2>
+        <MappingsUsed least={leastPossibleMappings} spent={mappingsUsed} />
+        <div>
+          <Button onClick={() => setChallengeIndex(0)}>Try again</Button>
+        </div>
+      </div>)
   }
+
+  if (!challenge) {
+    return <div>Something went wrong</div>
+  }
+
   return (
     <div>
-      <div style={{ height: "20px" }}>{challengeIndex + 1}/{challenges.length}</div>
-      <Challenge key={challenge.content + challenge.description} onFinished={() => {
+      <div style={{ height: "20px" }}>Challenge: {challengeIndex + 1}/{challenges.length}</div>
+      <VimChallenge key={challenge.content + challenge.description} onFinished={(mappings) => {
         setChallengeIndex(challengeIndex + 1)
+        setMappingsUsed(s => s + mappings)
       }} challenge={challenge} />
     </div>
   )

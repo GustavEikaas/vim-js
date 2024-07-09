@@ -1,13 +1,8 @@
 import { useEffect, useState } from "react";
-import { createVimInstance, Vim } from "../../vim/vim";
+import { Vim } from "../../vim/vim";
 import { getContent } from "../../helpers/get-content";
 
-export function useVim(init?: (vim: Vim) => void | Vim) {
-  const [vim] = useState(() => {
-    const vim = createVimInstance()
-    init && init(vim)
-    return vim;
-  });
+export function useVim(vim: Vim) {
 
   const [content, setContent] = useState(getContent(vim));
   const [cursorPos, setCursorPos] = useState(vim.cursorPos);

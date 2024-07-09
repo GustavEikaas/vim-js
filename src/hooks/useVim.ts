@@ -13,6 +13,7 @@ export function useVim(init?: (vim: Vim) => void | Vim) {
   const [cursorPos, setCursorPos] = useState(vim.cursorPos);
   const [mode, setMode] = useState(vim.mode);
   const [clipboard, setClipboard] = useState(vim.clipboard.content);
+  const [mappingsExecuted, setMappingsExecuted] = useState(0);
 
   useEffect(() => {
     const controller = new AbortController()
@@ -20,6 +21,10 @@ export function useVim(init?: (vim: Vim) => void | Vim) {
       switch (ev.event) {
         case "OnModeChange":
           setMode(ev.data.mode)
+          break;
+
+        case "OnMappingExecuted":
+          setMappingsExecuted(s => s + 1)
           break;
 
         case "OnCursorMove":
@@ -47,6 +52,7 @@ export function useVim(init?: (vim: Vim) => void | Vim) {
     cursorPos,
     clipboard,
     mode,
+    mappingsExecuted,
     vim
   }
 }

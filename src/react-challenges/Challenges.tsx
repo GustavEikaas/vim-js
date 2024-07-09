@@ -3,6 +3,7 @@ import { Challenge } from "./Terminal";
 import { Vim } from "../vim/vim";
 
 const challenge: Challenge = {
+  strokes: 2,
   expected: (vim) => {
     return vim.cursorPos.startLine === vim.content.length - 2;
   },
@@ -293,11 +294,13 @@ function isValidCursorPosition(cursorPosition: CursorPosition, vim: Vim): boolea
 const challenges: Challenge[] = [
   challenge,
   {
+    strokes: 1,
     description: "Delete line 1",
     content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
     expected: "How are you?\nIm good how bout u\nman im good aswell"
   },
   {
+    strokes: 3,
     description: "Copy line 3",
     content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
     expected: (vim: Vim) => {
@@ -305,6 +308,7 @@ const challenges: Challenge[] = [
     }
   },
   {
+    strokes: 1,
     description: "Create line above line 2",
     content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
     expected: (vim: Vim) => {
@@ -312,6 +316,7 @@ const challenges: Challenge[] = [
     }
   },
   {
+    strokes: 1,
     description: "Go to line 2",
     content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
     expected: (vim: Vim) => {
@@ -319,6 +324,7 @@ const challenges: Challenge[] = [
     }
   },
   {
+    strokes: 1,
     description: "Move cursor to the right",
     content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
     expected: (vim: Vim) => {
@@ -326,6 +332,7 @@ const challenges: Challenge[] = [
     }
   },
   {
+    strokes: 3,
     description: "Copy line 3",
     content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
     expected: (vim: Vim) => {

@@ -29,6 +29,11 @@ const blink = keyframes`
 `;
 
 const CodePreviewContainer = styled.div`
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+  box-shadow: 0px 0px 2px red;
   background: ${draculaTheme.background};
   color: ${draculaTheme.foreground};
   padding: 16px;
@@ -74,6 +79,7 @@ export type Challenge = {
   description: string;
   content: string;
   expected: string | ((vim: Vim) => boolean);
+  strokes: number;
 }
 
 const LineNumbers = styled.div`
@@ -108,16 +114,13 @@ const ProblemDescriptionContainer = styled.div`
   padding: 16px;
   border-radius: 8px;
   margin-bottom: 16px;
-  font-family: 'Fira Code', 'Courier New', Courier, monospace;
   font-size: 14px;
   line-height: 1.5;
 `;
 
 export const Challenge = ({ challenge, onFinished }: ChallengeProps) => {
   const pRef = useRef<HTMLDivElement>(null)
-  const { vim, content, mode, clipboard, cursorPos } = useVim((v) => {
-    v.setContent(challenge.content.split("\n"))
-  })
+  const { vim, content, mode, clipboard, cursorPos, mappingsExecuted } = useVim((v) => v.setContent(challenge.content.split("\n")))
 
   useEffect(() => {
     if (typeof (challenge.expected) == "function" && challenge.expected(vim)) {
@@ -129,25 +132,17 @@ export const Challenge = ({ challenge, onFinished }: ChallengeProps) => {
   }, [content, mode, clipboard, challenge.expected])
 
   useLayoutEffect(() => {
-    const abortController = new AbortController()
-    addEventListener("keydown", (event) => {
-      vim.sendKey(event.key)
-    }, { signal: abortController.signal })
-
-    return () => {
-      abortController.abort()
-    }
-  }, [vim])
-
-
-  useLayoutEffect(() => {
     pRef.current?.scrollIntoView({ behavior: "instant", block: "center" })
   }, [cursorPos])
 
   return (
     <StyledWrapper>
+      <MappingsUsed mappingsExecuted={mappingsExecuted} challenge={challenge} />
       <ProblemDescriptionContainer>{challenge.description}</ProblemDescriptionContainer>
-      <CodePreviewContainer>
+      <CodePreviewContainer ref={ref => { ref && ref.focus() }} tabIndex={0} onKeyDown={(e) => {
+        e.preventDefault()
+        vim.sendKey(e.key)
+      }}>
         <LineNumbers>
           {content.content.map((_, i) => `${i + 1}\n`)}
         </LineNumbers>
@@ -163,6 +158,14 @@ export const Challenge = ({ challenge, onFinished }: ChallengeProps) => {
     </StyledWrapper>
   );
 };
+
+type MappingsUsedProps = {
+  mappingsExecuted: number;
+  challenge: Challenge;
+}
+const MappingsUsed = ({ mappingsExecuted, challenge }: MappingsUsedProps) => {
+  return (<div>Mappings used: <span style={{ color: mappingsExecuted > challenge.strokes ? draculaTheme.red : "inherit" }}>{mappingsExecuted}</span>/{challenge.strokes}</div>)
+}
 
 const getVimModeColor = (mode: VimMode) => {
   switch (mode) {

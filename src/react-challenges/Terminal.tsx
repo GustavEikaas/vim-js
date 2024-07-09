@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { useVim } from './hooks/useVim'
 import styled, { keyframes } from 'styled-components';
-import { useVim } from "../hooks/useVim";
 import { Vim, VimMode } from "../vim/vim";
 
 export const draculaTheme = {

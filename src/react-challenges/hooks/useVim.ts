@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getContent } from "../helpers/get-content";
-import { createVimInstance, Vim } from "../vim/vim";
+import { createVimInstance, Vim } from "../../vim/vim";
+import { getContent } from "../../helpers/get-content";
 
 export function useVim(init?: (vim: Vim) => void | Vim) {
   const [vim] = useState(() => {

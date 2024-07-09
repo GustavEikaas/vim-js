@@ -11,6 +11,12 @@ const challenges: Challenge[] = [
   },
   {
     strokes: 1,
+    description: "Navigate to end of line 1",
+    content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
+    expected: (vim: Vim) => vim.cursorPos.startLine == 0 && vim.cursorPos.startIndex == vim.content[0].length - 1
+  },
+  {
+    strokes: 1,
     description: "Enter insert mode",
     content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
     expected: (vim: Vim) => vim.mode === "Insert"
@@ -54,15 +60,13 @@ const challenges: Challenge[] = [
     }
   },
   {
-    strokes: 3,
-    description: "Copy line 3",
+    strokes: 1,
+    description: "Navigate to end of buffer",
     content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
-    expected: (vim: Vim) => {
-      return vim.clipboard.content === "Im good how bout u\n"
-    }
-  },
-
+    expected: (vim: Vim) => vim.cursorPos.startLine === vim.content.length - 1
+  }
 ]
+
 export function Challenges() {
   const [challengeIndex, setChallengeIndex] = useState(0)
   const challenge = challenges[challengeIndex]

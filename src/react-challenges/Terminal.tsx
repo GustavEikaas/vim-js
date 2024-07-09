@@ -3,7 +3,7 @@ import styled, { keyframes } from 'styled-components';
 import { useVim } from "../hooks/useVim";
 import { Vim } from "../vim/vim";
 
-const draculaTheme = {
+export const draculaTheme = {
   background: '#282a36',
   currentLine: '#44475a',
   selection: '#44475a',

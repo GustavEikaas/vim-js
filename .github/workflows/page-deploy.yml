@@ -10,9 +10,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Preinstall pnpm
-        shell: bash
-        run: npx pnpm i -g pnpm@latest
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.0.6
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v4

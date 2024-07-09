@@ -2,21 +2,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { useVim } from './hooks/useVim'
 import styled, { keyframes } from 'styled-components';
 import { Vim } from "../vim/vim";
-
-export const draculaTheme = {
-  background: '#282a36',
-  currentLine: '#44475a',
-  selection: '#44475a',
-  foreground: '#f8f8f2',
-  comment: '#6272a4',
-  cyan: '#8be9fd',
-  green: '#50fa7b',
-  orange: '#ffb86c',
-  pink: '#ff79c6',
-  purple: '#bd93f9',
-  red: '#ff5555',
-  yellow: '#f1fa8c',
-};
+import { draculaTheme } from "./theme/dracula";
 
 const blink = keyframes`
   from, to {

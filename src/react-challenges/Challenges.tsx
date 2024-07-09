@@ -27,7 +27,7 @@ const challenges: Challenge[] = [
     expected: (vim) => vim.mode === "Visual"
   },
   {
-    strokes: 3,
+    strokes: 2,
     description: "Copy line 3",
     content: "The map was ancient\nIt showed a forest\nDeep within the forest\nWas a treasure marked with an X",
     expected: (vim) => {
@@ -63,6 +63,12 @@ const challenges: Challenge[] = [
     description: "Navigate to end of buffer",
     content: "With the treasure found\nThey returned home\nTheir adventure was complete\nBut memories would last forever",
     expected: (vim) => vim.cursorPos.startLine === vim.content.length - 1
+  },
+  {
+    strokes: 2,
+    description: "Navigate to end of line 3",
+    content: "Percy was a brave pig\nHe loved discovering new places\nHis friends admired his courage\nThey often followed him on adventures",
+    expected: (vim) => vim.cursorPos.startLine == 2 && vim.cursorPos.startIndex == vim.content[2].length - 1
   }
 ]
 

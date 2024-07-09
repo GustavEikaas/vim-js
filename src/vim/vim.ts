@@ -176,8 +176,11 @@ export const createVimInstance = (): Readonly<Vim> => {
   function setMode(mode: VimMode, vim: Vim) {
     switch (mode) {
       case "Normal":
-        vim.cursorPos.endLine = vim.cursorPos.startLine
-        vim.cursorPos.endIndex = vim.cursorPos.startIndex
+        vim.setCursorPosition({
+          ...vim.cursorPos,
+          endLine: vim.cursorPos.startLine,
+          endIndex: vim.cursorPos.startIndex
+        })
         break;
 
       case "Visual":

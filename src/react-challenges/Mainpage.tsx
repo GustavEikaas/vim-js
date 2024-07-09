@@ -1,6 +1,5 @@
 import styled from "styled-components";
 import { Challenges } from "./Challenges";
-import { draculaTheme } from "./Terminal";
 
 export function Mainpage() {
 
@@ -8,7 +7,7 @@ export function Mainpage() {
     <StyledMainpage>
       <Heading />
       <Challenges />
-      <div>Im a footing</div>
+      <div />
     </StyledMainpage>
   )
 }
@@ -28,7 +27,6 @@ const StyledHeading = styled.div`
   align-items: center;
   box-sizing: border-box;
   padding: 10px;
-  border-bottom: 1px solid grey;
 `
 
 const StyledMainpage = styled.div`
@@ -39,3 +37,4 @@ const StyledMainpage = styled.div`
   justify-content: space-between;
   align-items: center;
 `
+

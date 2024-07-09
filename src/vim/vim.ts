@@ -8,6 +8,7 @@ import { prependContent } from "../helpers/prepend-content";
 import { prependLine } from "../helpers/prepend-line";
 import { setLineIndex } from "../helpers/set-line-index";
 import { createSubscriptionChannel } from "../helpers/subscribe";
+import { imap } from "../mappings/imap";
 import { nmap } from "../mappings/nmap";
 import { vmap } from "../mappings/vmap";
 import { VimEvent } from "./events";
@@ -35,8 +36,6 @@ export type CursorPosition = {
   /** When jumping lines up and down cursor position will adjust to EOL if the next line is shorter than the previous */
   offset: number;
 }
-
-const imap: Mapping[] = []
 
 type Clipboard = {
   setClipboardContent: (content: string | null) => void;
@@ -157,6 +156,10 @@ export const createVimInstance = (): Readonly<Vim> => {
       }
 
       case "Insert":
+        const mapping = matchMapping(vim.iMap, vim)
+        if (!mapping.mapping) return
+        console.debug(`Normal seq match [${mapping?.mapping?.seq.join(",")}]`, mapping.modifier)
+        executeMapping(mapping.mapping, mapping.modifier ?? {})
         break;
 
       case "Visual":

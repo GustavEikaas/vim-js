@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef } from "react"
 import styled, { keyframes } from 'styled-components';
 import { useVim } from "../hooks/useVim";
-import { Vim } from "../vim/vim";
+import { Vim, VimMode } from "../vim/vim";
 
 export const draculaTheme = {
   background: '#282a36',
@@ -43,6 +43,25 @@ const CodePreviewContainer = styled.div`
   padding-left: 40px; /* Space for line numbers */
   min-width: 100%;
   min-height: 50%;
+
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: ${draculaTheme.background};
+    border-radius: 10px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: ${draculaTheme.comment};
+    border-radius: 10px;
+    border: 3px solid ${draculaTheme.selection};
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: ${draculaTheme.green};
+  }
 `;
 
 // Styled component for syntax highlighting
@@ -137,16 +156,36 @@ export const Challenge = ({ challenge, onFinished }: ChallengeProps) => {
           {content.after.join("\n")}
         </StyledCode>
       </CodePreviewContainer>
-      <div>{mode}</div>
+      <div style={{ display: "flex", justifyContent: "flex-start", width: "100%" }}>
+        <StyledMode $mode={mode}>{mode}</StyledMode>
+      </div>
     </StyledWrapper>
   );
 };
 
+const getVimModeColor = (mode: VimMode) => {
+  switch (mode) {
+    case "Normal":
+      return draculaTheme.purple;
+    case "Insert":
+      return draculaTheme.green;
+    case "Visual":
+      return draculaTheme.yellow;
+  }
+  return draculaTheme.cyan;
+}
+
+const StyledMode = styled.div<{ $mode: VimMode }>`
+height: 20px;
+width: 8ch;
+background-color: ${(props) => getVimModeColor(props.$mode)};
+text-align: center;
+`
 
 const StyledWrapper = styled.div`
 display: flex;
 align-items: center;
 flex-direction: column;
 height: 500px;
-width: 500px;
+min-width: 50vw;
 `

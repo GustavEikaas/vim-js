@@ -1,6 +1,8 @@
 name: Publish github page
 
 on:
+  pull_request:
+  
   push:
     branches: ["main"]
 

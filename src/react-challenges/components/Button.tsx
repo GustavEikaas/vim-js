@@ -12,7 +12,7 @@ export const Button = styled.button`
   transition: background-color 0.3s ease;
 
   &:hover {
-    background-color: ${draculaTheme.cyan};
+    background-color: ${draculaTheme.background};
   }
 
   &:active {
@@ -21,6 +21,6 @@ export const Button = styled.button`
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px ${draculaTheme.pink};
+    box-shadow: 0 0 0 2px ${draculaTheme.foreground};
   }
 `;

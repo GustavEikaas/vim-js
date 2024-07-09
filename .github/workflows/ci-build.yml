@@ -13,5 +13,4 @@ jobs:
         uses: ./.github/actions/pnpm-setup
 
       - name: Build
-        run: |
-          pnpx tsc -b
+        run: pnpm build

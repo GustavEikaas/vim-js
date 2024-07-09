@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "test": "vitest",
-    "build": "tsc -b && vite build",
+    "bundle": "tsc -b && vite build",
+    "build": "tsc -b",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -27,6 +28,5 @@
     "typescript": "^5.2.2",
     "vite": "^5.3.1",
     "vitest": "^1.6.0",
-    "webpack-cli": "^5.1.4"
   }
 }

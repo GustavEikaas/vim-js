@@ -32,7 +32,9 @@ const CodePreviewContainer = styled.div`
   background: ${draculaTheme.background};
   color: ${draculaTheme.foreground};
   padding: 16px;
-  border-radius: 8px;
+  box-sizing: border-box;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
   overflow: auto;
   font-family: 'Fira Code', 'Courier New', Courier, monospace;
   font-size: 14px;
@@ -64,29 +66,6 @@ const CodePreviewContainer = styled.div`
   }
 `;
 
-// Styled component for syntax highlighting
-const StyledCode = styled.code`
-  .comment { color: ${draculaTheme.comment}; }
-  .keyword { color: ${draculaTheme.pink}; }
-  .string { color: ${draculaTheme.yellow}; }
-  .variable { color: ${draculaTheme.orange}; }
-  .function { color: ${draculaTheme.green}; }
-  .operator { color: ${draculaTheme.purple}; }
-  .number { color: ${draculaTheme.cyan}; }
-`;
-
-const ProblemDescriptionContainer = styled.div`
-  background: ${draculaTheme.currentLine};
-  color: ${draculaTheme.foreground};
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  font-family: 'Fira Code', 'Courier New', Courier, monospace;
-  font-size: 14px;
-  line-height: 1.5;
-`;
-
-
 const StyledHighlightRange = styled.span`
 animation: ${blink} 1s step-end infinite;
 `
@@ -112,6 +91,28 @@ type ChallengeProps = {
   challenge: Challenge;
   onFinished: () => void;
 }
+
+const StyledCode = styled.code`
+  .comment { color: ${draculaTheme.comment}; }
+  .keyword { color: ${draculaTheme.pink}; }
+  .string { color: ${draculaTheme.yellow}; }
+  .variable { color: ${draculaTheme.orange}; }
+  .function { color: ${draculaTheme.green}; }
+  .operator { color: ${draculaTheme.purple}; }
+  .number { color: ${draculaTheme.cyan}; }
+`;
+
+const ProblemDescriptionContainer = styled.div`
+  background: ${draculaTheme.currentLine};
+  color: ${draculaTheme.foreground};
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-family: 'Fira Code', 'Courier New', Courier, monospace;
+  font-size: 14px;
+  line-height: 1.5;
+`;
+
 export const Challenge = ({ challenge, onFinished }: ChallengeProps) => {
   const pRef = useRef<HTMLDivElement>(null)
   const { vim, content, mode, clipboard, cursorPos } = useVim((v) => {
@@ -156,9 +157,9 @@ export const Challenge = ({ challenge, onFinished }: ChallengeProps) => {
           {content.after.join("\n")}
         </StyledCode>
       </CodePreviewContainer>
-      <div style={{ display: "flex", justifyContent: "flex-start", width: "100%" }}>
+      <StyledLuaLine>
         <StyledMode $mode={mode}>{mode}</StyledMode>
-      </div>
+      </StyledLuaLine>
     </StyledWrapper>
   );
 };
@@ -175,7 +176,17 @@ const getVimModeColor = (mode: VimMode) => {
   return draculaTheme.cyan;
 }
 
+const StyledLuaLine = styled.div`
+  display: flex;
+  justifyContent: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: ${draculaTheme.background};
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+`
 const StyledMode = styled.div<{ $mode: VimMode }>`
+border-bottom-left-radius: inherit;
 height: 20px;
 width: 8ch;
 background-color: ${(props) => getVimModeColor(props.$mode)};

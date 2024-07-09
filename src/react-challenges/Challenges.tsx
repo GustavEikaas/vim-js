@@ -1,69 +1,68 @@
 import { useState } from "react";
 import { Challenge } from "./Terminal";
-import { Vim } from "../vim/vim";
 
 const challenges: Challenge[] = [
   {
     strokes: 1,
     description: "Delete line 1",
-    content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
-    expected: "How are you?\nIm good how bout u\nman im good aswell"
+    content: "Once upon a time\nThere was a little pig named Percy\nPercy loved adventures\nOne day, he found a map",
+    expected: "There was a little pig named Percy\nPercy loved adventures\nOne day, he found a map"
   },
   {
     strokes: 1,
     description: "Navigate to end of line 1",
-    content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
-    expected: (vim: Vim) => vim.cursorPos.startLine == 0 && vim.cursorPos.startIndex == vim.content[0].length - 1
+    content: "Percy lived on a farm\nHe had many friends\nThey often played together\nLife was joyful",
+    expected: (vim) => vim.cursorPos.startLine == 0 && vim.cursorPos.startIndex == vim.content[0].length - 1
   },
   {
     strokes: 1,
     description: "Enter insert mode",
-    content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
-    expected: (vim: Vim) => vim.mode === "Insert"
+    content: "Percy loved to explore\nEvery day was a new adventure\nHe discovered hidden paths\nAnd secret treasures",
+    expected: (vim) => vim.mode === "Insert"
   },
   {
     strokes: 1,
     description: "Enter visual mode",
-    content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
-    expected: (vim: Vim) => vim.mode === "Visual"
+    content: "On a sunny day\nPercy found an old map\nIt led to a hidden treasure\nHis heart raced with excitement",
+    expected: (vim) => vim.mode === "Visual"
   },
   {
     strokes: 3,
     description: "Copy line 3",
-    content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
-    expected: (vim: Vim) => {
-      return vim.clipboard.content === "Im good how bout u\n"
+    content: "The map was ancient\nIt showed a forest\nDeep within the forest\nWas a treasure marked with an X",
+    expected: (vim) => {
+      return vim.clipboard.content === "Deep within the forest\n"
     }
   },
   {
     strokes: 1,
     description: "Create line above line 2",
-    content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
-    expected: (vim: Vim) => {
+    content: "Percy gathered his friends\nThey were excited\nTogether they set off\nOn a grand adventure",
+    expected: (vim) => {
       return vim.content.length == 5 && vim.content[1] === " ";
     }
   },
   {
     strokes: 1,
     description: "Go to line 2",
-    content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
-    expected: (vim: Vim) => {
+    content: "The journey was long\nBut they were determined\nThey faced many challenges\nAnd overcame them all",
+    expected: (vim) => {
       return vim.cursorPos.startLine === 1;
     }
   },
   {
     strokes: 1,
     description: "Move cursor to the right",
-    content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
-    expected: (vim: Vim) => {
+    content: "At last, they arrived\nThe treasure was real\nThey couldn't believe their eyes\nIt was a dream come true",
+    expected: (vim) => {
       return vim.cursorPos.startIndex === 1
     }
   },
   {
     strokes: 1,
     description: "Navigate to end of buffer",
-    content: "Hello\nHow are you?\nIm good how bout u\nman im good aswell",
-    expected: (vim: Vim) => vim.cursorPos.startLine === vim.content.length - 1
+    content: "With the treasure found\nThey returned home\nTheir adventure was complete\nBut memories would last forever",
+    expected: (vim) => vim.cursorPos.startLine === vim.content.length - 1
   }
 ]
 

@@ -1,9 +1,9 @@
 import { useEffect, useLayoutEffect, useRef } from "react"
 import styled, { keyframes } from 'styled-components';
 import { useVim } from "../hooks/useVim";
-import { Vim } from "../vim/vim";
+import { Vim, VimMode } from "../vim/vim";
 
-const draculaTheme = {
+export const draculaTheme = {
   background: '#282a36',
   currentLine: '#44475a',
   selection: '#44475a',
@@ -32,7 +32,9 @@ const CodePreviewContainer = styled.div`
   background: ${draculaTheme.background};
   color: ${draculaTheme.foreground};
   padding: 16px;
-  border-radius: 8px;
+  box-sizing: border-box;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
   overflow: auto;
   font-family: 'Fira Code', 'Courier New', Courier, monospace;
   font-size: 14px;
@@ -43,30 +45,26 @@ const CodePreviewContainer = styled.div`
   padding-left: 40px; /* Space for line numbers */
   min-width: 100%;
   min-height: 50%;
-`;
 
-// Styled component for syntax highlighting
-const StyledCode = styled.code`
-  .comment { color: ${draculaTheme.comment}; }
-  .keyword { color: ${draculaTheme.pink}; }
-  .string { color: ${draculaTheme.yellow}; }
-  .variable { color: ${draculaTheme.orange}; }
-  .function { color: ${draculaTheme.green}; }
-  .operator { color: ${draculaTheme.purple}; }
-  .number { color: ${draculaTheme.cyan}; }
-`;
+  &::-webkit-scrollbar {
+    width: 12px;
+  }
 
-const ProblemDescriptionContainer = styled.div`
-  background: ${draculaTheme.currentLine};
-  color: ${draculaTheme.foreground};
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  font-family: 'Fira Code', 'Courier New', Courier, monospace;
-  font-size: 14px;
-  line-height: 1.5;
-`;
+  &::-webkit-scrollbar-track {
+    background: ${draculaTheme.background};
+    border-radius: 10px;
+  }
 
+  &::-webkit-scrollbar-thumb {
+    background-color: ${draculaTheme.comment};
+    border-radius: 10px;
+    border: 3px solid ${draculaTheme.selection};
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: ${draculaTheme.green};
+  }
+`;
 
 const StyledHighlightRange = styled.span`
 animation: ${blink} 1s step-end infinite;
@@ -93,6 +91,28 @@ type ChallengeProps = {
   challenge: Challenge;
   onFinished: () => void;
 }
+
+const StyledCode = styled.code`
+  .comment { color: ${draculaTheme.comment}; }
+  .keyword { color: ${draculaTheme.pink}; }
+  .string { color: ${draculaTheme.yellow}; }
+  .variable { color: ${draculaTheme.orange}; }
+  .function { color: ${draculaTheme.green}; }
+  .operator { color: ${draculaTheme.purple}; }
+  .number { color: ${draculaTheme.cyan}; }
+`;
+
+const ProblemDescriptionContainer = styled.div`
+  background: ${draculaTheme.currentLine};
+  color: ${draculaTheme.foreground};
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-family: 'Fira Code', 'Courier New', Courier, monospace;
+  font-size: 14px;
+  line-height: 1.5;
+`;
+
 export const Challenge = ({ challenge, onFinished }: ChallengeProps) => {
   const pRef = useRef<HTMLDivElement>(null)
   const { vim, content, mode, clipboard, cursorPos } = useVim((v) => {
@@ -137,16 +157,46 @@ export const Challenge = ({ challenge, onFinished }: ChallengeProps) => {
           {content.after.join("\n")}
         </StyledCode>
       </CodePreviewContainer>
-      <div>{mode}</div>
+      <StyledLuaLine>
+        <StyledMode $mode={mode}>{mode}</StyledMode>
+      </StyledLuaLine>
     </StyledWrapper>
   );
 };
 
+const getVimModeColor = (mode: VimMode) => {
+  switch (mode) {
+    case "Normal":
+      return draculaTheme.purple;
+    case "Insert":
+      return draculaTheme.green;
+    case "Visual":
+      return draculaTheme.yellow;
+  }
+  return draculaTheme.cyan;
+}
+
+const StyledLuaLine = styled.div`
+  display: flex;
+  justifyContent: flex-start;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: ${draculaTheme.background};
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+`
+const StyledMode = styled.div<{ $mode: VimMode }>`
+border-bottom-left-radius: inherit;
+height: 20px;
+width: 8ch;
+background-color: ${(props) => getVimModeColor(props.$mode)};
+text-align: center;
+`
 
 const StyledWrapper = styled.div`
 display: flex;
 align-items: center;
 flex-direction: column;
 height: 500px;
-width: 500px;
+min-width: 50vw;
 `

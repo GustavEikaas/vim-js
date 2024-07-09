@@ -4,9 +4,9 @@ import { Vim } from "../vim/vim";
 
 const challenge: Challenge = {
   expected: (vim) => {
-    return vim.cursorPos.startLine === vim.content.length - 1;
+    return vim.cursorPos.startLine === vim.content.length - 2;
   },
-  description: "Navigate to bottom of page",
+  description: "Navigate to the second last line of the buffer",
   content: `import { appendContent } from "../helpers/append-content";
 import { appendLine } from "../helpers/append-line";
 import { copyLine } from "../helpers/copy-line";

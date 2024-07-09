@@ -113,6 +113,7 @@ export const createVimInstance = (): Readonly<Vim> => {
   function executeMapping(mapping: Mapping, modifier: ModifierPayload) {
     mapping?.action(vim, modifier)
     vim.lastKeys = []
+    notify({ event: "OnMappingExecuted", data: {} })
   }
 
   function matchMapping(map: Mapping[], vim: Vim) {
@@ -171,8 +172,6 @@ export const createVimInstance = (): Readonly<Vim> => {
       }
     }
   }
-
-
 
   function setMode(mode: VimMode, vim: Vim) {
     switch (mode) {

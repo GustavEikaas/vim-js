@@ -84,11 +84,15 @@ export const nmap: Mapping[] = [
     action: (vim) => {
       vim.appendLine()
       vim.setLineNumber(false, 1)
+      vim.setMode("Insert")
     }
   },
   {
     seq: ["O"],
-    action: (vim) => vim.prependLine()
+    action: (vim) => {
+      vim.prependLine()
+      vim.setMode("Insert")
+    }
   },
   {
     seq: ["P"],

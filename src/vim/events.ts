@@ -4,7 +4,8 @@ export type VimEvent = [
   OnContentChange,
   OnModeChange,
   OnCursorMove,
-  OnClipboardChange
+  OnClipboardChange,
+  OnMappingExecuted
 ][number]
 
 
@@ -21,6 +22,11 @@ export type OnCursorMove = {
 export type OnModeChange = {
   event: "OnModeChange",
   data: { mode: VimMode, prevMode: VimMode }
+}
+
+export type OnMappingExecuted = {
+  event: "OnMappingExecuted",
+  data: {}
 }
 
 export type OnClipboardChange = {

@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { useEffect, useLayoutEffect, useRef } from "react"
 import styled, { keyframes } from 'styled-components';
 import { useVim } from "../hooks/useVim";
 import { Vim } from "../vim/vim";

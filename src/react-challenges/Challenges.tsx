@@ -4,9 +4,9 @@ import { Vim } from "../vim/vim";
 
 const challenge: Challenge = {
   expected: (vim) => {
-    return false;
+    return vim.cursorPos.startLine === vim.content.length - 1;
   },
-  description: "have fun",
+  description: "Navigate to bottom of page",
   content: `import { appendContent } from "../helpers/append-content";
 import { appendLine } from "../helpers/append-line";
 import { copyLine } from "../helpers/copy-line";

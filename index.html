@@ -2,9 +2,16 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="./vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
+       @font-face {
+            font-family: '0xProto';
+            src: url('./assets/fonts/0xProto-Regular.woff2') format('woff2'),
+                 url('./assets/fonts/0xProto-Regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
         * {
           margin: 0;
           padding: 0;
@@ -20,6 +27,7 @@
         body {
           min-height: 100vh;
           overflow: hidden;
+          font-family: '0xProto', Arial, sans-serif;
         }
 
         /* Optional: Prevent scroll on all elements, this might not be necessary */
@@ -36,6 +44,6 @@
   </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="/src/react-challenges/main.tsx"></script>
+    <script type="module" src="./src/react-challenges/main.tsx"></script>
   </body>
 </html>

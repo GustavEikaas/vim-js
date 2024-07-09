@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Challenge, MappingsUsed } from "./Terminal";
 import { Button } from "./components/Button";
-import { challenges } from './challenges'
-import React from "react";
+import { challenges } from './challenges/challenges'
+import { MappingsUsed } from "./components/MappingsUsed";
+import { VimChallenge } from "./VimChallenge";
 
 export function Challenges() {
   const [challengeIndex, setChallengeIndex] = useState(0)
@@ -17,7 +17,7 @@ export function Challenges() {
         <h2>Finished</h2>
         <MappingsUsed least={leastPossibleMappings} spent={mappingsUsed} />
         <div>
-          <Button>Try again</Button>
+          <Button onClick={() => setChallengeIndex(0)}>Try again</Button>
         </div>
       </div>)
   }
@@ -29,7 +29,7 @@ export function Challenges() {
   return (
     <div>
       <div style={{ height: "20px" }}>{challengeIndex + 1}/{challenges.length}</div>
-      <Challenge key={challenge.content + challenge.description} onFinished={(mappings) => {
+      <VimChallenge key={challenge.content + challenge.description} onFinished={(mappings) => {
         setChallengeIndex(challengeIndex + 1)
         setMappingsUsed(s => s + mappings)
       }} challenge={challenge} />

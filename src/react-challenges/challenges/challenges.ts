@@ -1,4 +1,4 @@
-import { Challenge } from "./Terminal";
+import { Challenge } from "../Terminal";
 
 export const challenges: Challenge[] = [
   {

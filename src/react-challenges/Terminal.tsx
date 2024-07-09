@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react"
+import { useLayoutEffect, useRef, useState } from "react"
 import { useVim } from './hooks/useVim'
 import styled, { keyframes } from 'styled-components';
 import { Vim } from "../vim/vim";
@@ -70,13 +70,6 @@ const StyledHighlightRange = styled.span`
   animation: ${blink} 1s step-end infinite;
 `
 
-export type Challenge = {
-  description: string;
-  content: string;
-  expected: string | ((vim: Vim) => boolean);
-  strokes: number;
-}
-
 const LineNumbers = styled.div`
   position: absolute;
   left: 0px;
@@ -88,10 +81,6 @@ const LineNumbers = styled.div`
   pointer-events: none; /* Allow text selection without interfering */
   line-height: 1.5669
 `;
-type ChallengeProps = {
-  challenge: Challenge;
-  onFinished: (mappings: number) => void;
-}
 
 const StyledCode = styled.code`
   .comment { color: ${draculaTheme.comment}; }
@@ -103,21 +92,15 @@ const StyledCode = styled.code`
   .number { color: ${draculaTheme.cyan}; }
 `;
 
-const ProblemDescriptionContainer = styled.div`
-  background: ${draculaTheme.currentLine};
-  color: ${draculaTheme.foreground};
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  font-size: 14px;
-  line-height: 1.5;
-`;
+type TerminalProps = {
+  vim: Vim;
+}
 
-export const Challenge = ({ challenge, onFinished }: ChallengeProps) => {
+export function Terminal({ vim }: TerminalProps) {
   const pRef = useRef<HTMLDivElement>(null)
-  const { vim, content, mode, clipboard, cursorPos, mappingsExecuted } = useVim((v) => v.setContent(challenge.content.split("\n")))
-  const [isFocused, setIsFocused] = useState(false)
+  const { content, mode, cursorPos } = useVim(vim)
   const cRef = useRef<HTMLDivElement | null>(null);
+  const [isFocused, setIsFocused] = useState(false)
 
   const setRef = (ref: HTMLDivElement) => {
     if (cRef.current === ref) return;
@@ -127,48 +110,28 @@ export const Challenge = ({ challenge, onFinished }: ChallengeProps) => {
     cRef.current = ref
   }
 
-  useEffect(() => {
-    if (typeof (challenge.expected) == "function" && challenge.expected(vim)) {
-      onFinished(mappingsExecuted)
-    }
-    if (content.content.join("\n") == challenge.expected) {
-      onFinished(mappingsExecuted)
-    }
-  }, [content, mode, clipboard, challenge.expected])
-
   useLayoutEffect(() => {
     pRef.current?.scrollIntoView({ behavior: "instant", block: "center" })
   }, [cursorPos])
 
-  return (
-    <>
-      <MappingsUsed spent={mappingsExecuted} least={challenge.strokes} />
-      <ProblemDescriptionContainer>{challenge.description}</ProblemDescriptionContainer>
-      <StyledWrapper $focus={isFocused}>
-        <CodePreviewContainer ref={ref => ref && setRef(ref)} tabIndex={0} onKeyDown={(e) => vim.sendKey(e.key, { shift: e.shiftKey, ctrl: e.ctrlKey, alt: e.altKey })}>
-          <LineNumbers>
-            {content.content.map((_, i) => `${i + 1}\n`)}
-          </LineNumbers>
-          <StyledCode>
-            {content.before.join("\n")}
-            <StyledHighlightRange ref={pRef}>{content.highlighted.at(0) == "" ? " " : content.highlighted.join("\n")}</StyledHighlightRange>
-            {content.after.join("\n")}
-          </StyledCode>
-        </CodePreviewContainer>
-        <StyledLuaLine>
-          <StyledMode $mode={mode}>{mode}</StyledMode>
-        </StyledLuaLine>
-      </StyledWrapper>
-    </>
-  );
-};
 
-type MappingsUsedProps = {
-  spent: number;
-  least: number;
-}
-export const MappingsUsed = ({ spent, least }: MappingsUsedProps) => {
-  return (<div>Mappings used: <span style={{ color: spent > least ? draculaTheme.red : "inherit" }}>{spent}</span>/{least}</div>)
+  return (
+    <StyledWrapper $focus={isFocused}>
+      <CodePreviewContainer ref={ref => ref && setRef(ref)} tabIndex={0} onKeyDown={(e) => vim.sendKey(e.key, { shift: e.shiftKey, ctrl: e.ctrlKey, alt: e.altKey })}>
+        <LineNumbers>
+          {content.content.map((_, i) => `${i + 1}\n`)}
+        </LineNumbers>
+        <StyledCode>
+          {content.before.join("\n")}
+          <StyledHighlightRange ref={pRef}>{content.highlighted.at(0) == "" ? " " : content.highlighted.join("\n")}</StyledHighlightRange>
+          {content.after.join("\n")}
+        </StyledCode>
+      </CodePreviewContainer>
+      <StyledLuaLine>
+        <StyledMode $mode={mode}>{mode}</StyledMode>
+      </StyledLuaLine>
+    </StyledWrapper>
+  )
 }
 
 const getVimModeColor = (mode: Vim.Mode) => {
@@ -200,5 +163,4 @@ const StyledMode = styled.div<{ $mode: Vim.Mode }>`
   background-color: ${(props) => getVimModeColor(props.$mode)};
   text-align: center;
 `
-
 

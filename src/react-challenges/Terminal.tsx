@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import styled, { keyframes } from 'styled-components';
 import { useVim } from "../hooks/useVim";
 import { Vim, VimMode } from "../vim/vim";
@@ -28,12 +28,21 @@ const blink = keyframes`
   }
 `;
 
+const StyledWrapper = styled.div<{ $focus: boolean }>`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  height: 500px;
+  min-width: 50vw;
+  filter: ${({ $focus }) => !$focus ? "opacity(50%)" : undefined};
+  position: relative;
+}
+`
+
 const CodePreviewContainer = styled.div`
   &:focus {
     outline: none;
-    box-shadow: none;
   }
-  box-shadow: 0px 0px 2px red;
   background: ${draculaTheme.background};
   color: ${draculaTheme.foreground};
   padding: 16px;
@@ -121,6 +130,16 @@ const ProblemDescriptionContainer = styled.div`
 export const Challenge = ({ challenge, onFinished }: ChallengeProps) => {
   const pRef = useRef<HTMLDivElement>(null)
   const { vim, content, mode, clipboard, cursorPos, mappingsExecuted } = useVim((v) => v.setContent(challenge.content.split("\n")))
+  const [isFocused, setIsFocused] = useState(false)
+  const cRef = useRef<HTMLDivElement | null>(null);
+
+  const setRef = (ref: HTMLDivElement) => {
+    if (cRef.current === ref) return;
+    ref.onfocus = () => setIsFocused(true)
+    ref.onblur = () => setIsFocused(false)
+    ref.focus()
+    cRef.current = ref
+  }
 
   useEffect(() => {
     if (typeof (challenge.expected) == "function" && challenge.expected(vim)) {
@@ -136,26 +155,25 @@ export const Challenge = ({ challenge, onFinished }: ChallengeProps) => {
   }, [cursorPos])
 
   return (
-    <StyledWrapper>
+    <>
       <MappingsUsed mappingsExecuted={mappingsExecuted} challenge={challenge} />
       <ProblemDescriptionContainer>{challenge.description}</ProblemDescriptionContainer>
-      <CodePreviewContainer ref={ref => { ref && ref.focus() }} tabIndex={0} onKeyDown={(e) => {
-        e.preventDefault()
-        vim.sendKey(e.key)
-      }}>
-        <LineNumbers>
-          {content.content.map((_, i) => `${i + 1}\n`)}
-        </LineNumbers>
-        <StyledCode>
-          {content.before.join("\n")}
-          <StyledHighlightRange ref={pRef}>{content.highlighted.at(0) == "" ? " " : content.highlighted.join("\n")}</StyledHighlightRange>
-          {content.after.join("\n")}
-        </StyledCode>
-      </CodePreviewContainer>
-      <StyledLuaLine>
-        <StyledMode $mode={mode}>{mode}</StyledMode>
-      </StyledLuaLine>
-    </StyledWrapper>
+      <StyledWrapper $focus={isFocused}>
+        <CodePreviewContainer ref={ref => ref && setRef(ref)} tabIndex={0} onKeyDown={(e) => vim.sendKey(e.key)}>
+          <LineNumbers>
+            {content.content.map((_, i) => `${i + 1}\n`)}
+          </LineNumbers>
+          <StyledCode>
+            {content.before.join("\n")}
+            <StyledHighlightRange ref={pRef}>{content.highlighted.at(0) == "" ? " " : content.highlighted.join("\n")}</StyledHighlightRange>
+            {content.after.join("\n")}
+          </StyledCode>
+        </CodePreviewContainer>
+        <StyledLuaLine>
+          <StyledMode $mode={mode}>{mode}</StyledMode>
+        </StyledLuaLine>
+      </StyledWrapper>
+    </>
   );
 };
 
@@ -189,17 +207,12 @@ const StyledLuaLine = styled.div`
   border-bottom-right-radius: 5px;
 `
 const StyledMode = styled.div<{ $mode: VimMode }>`
-border-bottom-left-radius: inherit;
-height: 20px;
-width: 8ch;
-background-color: ${(props) => getVimModeColor(props.$mode)};
-text-align: center;
+  text-transform: uppercase;
+  border-bottom-left-radius: inherit;
+  height: 20px;
+  width: 8ch;
+  background-color: ${(props) => getVimModeColor(props.$mode)};
+  text-align: center;
 `
 
-const StyledWrapper = styled.div`
-display: flex;
-align-items: center;
-flex-direction: column;
-height: 500px;
-min-width: 50vw;
-`
+

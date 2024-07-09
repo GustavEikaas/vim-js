@@ -100,7 +100,7 @@ const LineNumbers = styled.div`
   text-align: right;
   color: ${draculaTheme.comment};
   pointer-events: none; /* Allow text selection without interfering */
-  line-height: 1.57
+  line-height: 1.5669
 `;
 type ChallengeProps = {
   challenge: Challenge;
@@ -159,6 +159,7 @@ export const Challenge = ({ challenge, onFinished }: ChallengeProps) => {
       <MappingsUsed mappingsExecuted={mappingsExecuted} challenge={challenge} />
       <ProblemDescriptionContainer>{challenge.description}</ProblemDescriptionContainer>
       <StyledWrapper $focus={isFocused}>
+
         <CodePreviewContainer ref={ref => ref && setRef(ref)} tabIndex={0} onKeyDown={(e) => vim.sendKey(e.key)}>
           <LineNumbers>
             {content.content.map((_, i) => `${i + 1}\n`)}

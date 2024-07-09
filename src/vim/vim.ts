@@ -8,44 +8,12 @@ import { prependContent } from "../helpers/prepend-content";
 import { prependLine } from "../helpers/prepend-line";
 import { sendKey } from "../helpers/send-key";
 import { setLineIndex } from "../helpers/set-line-index";
+import { setMode } from "../helpers/set-mode";
 import { createSubscriptionChannel } from "../helpers/subscribe";
 import { imap } from "../mappings/imap";
 import { nmap } from "../mappings/nmap";
 import { vmap } from "../mappings/vmap";
 import { VimEvent } from "./events";
-
-export namespace Vim {
-  export type Mode = "Normal" | "Insert" | "Terminal" | "Visual" | "Replace" | "V-Block"
-
-  export type Mapping = {
-    /** An array of chars, * indicates wildcard */
-    seq: string[];
-    modifiers?: Partial<KeyModifiers>
-    /** A list of wildcards that apply to the mapping */
-    wildcards?: ["range"];
-    action: (vim: Vim, wildcard: WildcardPayload) => void;
-  }
-
-  export type CursorPosition = {
-    startLine: number;
-    endLine: number;
-    startIndex: number;
-    endIndex: number;
-    /** When jumping lines up and down cursor position will adjust to EOL if the next line is shorter than the previous */
-    offset: number;
-  }
-
-  export type KeyModifiers = {
-    ctrl: boolean;
-    shift: boolean;
-    alt: boolean;
-  }
-
-  export type SequenceHistory = {
-    key: string
-  } & KeyModifiers
-}
-
 
 export type WildcardPayload = {
   range?: number | undefined;
@@ -93,36 +61,6 @@ export type Vim = {
 type SubscriberEventCb = (ev: VimEvent) => void;
 
 export const createVimInstance = (): Readonly<Vim> => {
-
-  function setMode(mode: Vim.Mode, vim: Vim) {
-    switch (mode) {
-      case "Normal":
-        vim.setCursorPosition({
-          ...vim.cursorPos,
-          endLine: vim.cursorPos.startLine,
-          endIndex: vim.cursorPos.startIndex
-        })
-        break;
-
-      case "Visual":
-        break;
-
-      case "Insert":
-        break;
-    }
-    const prevMode = vim.mode;
-    vim.mode = mode;
-    notify({ event: "OnModeChange", data: { mode, prevMode } })
-    return vim
-
-  }
-
-  function adjustCursorPosition(vim: Vim) {
-    if (!isValidCursorPosition(vim.cursorPos, vim)) {
-      vim.setLineNumber(false, -1)
-    }
-  }
-
   const { addSubscriber, notify } = createSubscriptionChannel<VimEvent>()
 
   const vim: Vim = {
@@ -160,7 +98,7 @@ export const createVimInstance = (): Readonly<Vim> => {
       return vim;
     },
     mode: "Normal",
-    setMode: (mode) => setMode(mode, vim),
+    setMode: (mode) => setMode(mode, vim, (mode, prevMode) => notify({ event: "OnModeChange", data: { mode, prevMode } })),
     cursorPos: { startLine: 0, startIndex: 0, endLine: 0, endIndex: 0, offset: 0 },
     getCurrentLine: () => [vim.content[vim.cursorPos.startLine], vim.cursorPos.startLine, vim.content],
     prependLine: (content = " ") => prependLine(vim, content),
@@ -188,6 +126,7 @@ export const createVimInstance = (): Readonly<Vim> => {
     current: [] as string[]
   }
   const controller = new AbortController()
+
   vim.addSubscriber((ev) => {
     if (ev.event === "OnModeChange" && ev.data.mode === "Normal" && ev.data.prevMode === "Insert") {
       undoRegister.isSet = true;
@@ -197,6 +136,12 @@ export const createVimInstance = (): Readonly<Vim> => {
   }, controller.signal)
 
   return vim
+}
+
+function adjustCursorPosition(vim: Vim) {
+  if (!isValidCursorPosition(vim.cursorPos, vim)) {
+    vim.setLineNumber(false, -1)
+  }
 }
 
 //TODO: Implement insert specific cursor pos
@@ -213,4 +158,47 @@ function isValidCursorPosition(cursorPosition: Vim.CursorPosition, vim: Vim): bo
   }
 
   return true;
+}
+
+export namespace Vim {
+  /** The different vim modes*/
+  export type Mode = "Normal" | "Insert" | "Visual" | "V-Block"
+
+  /**
+   * A vim keymapping
+   */
+  export type Mapping = {
+    /** An array of chars */
+    seq: string[];
+    /** A list of wildcards that apply to the mapping */
+    wildcards?: ["range"];
+    /** The function to execute when the mapping is activated */
+    action: (vim: Vim, wildcard: WildcardPayload) => void;
+  }
+
+  /**
+   * The position of the Vim cursor
+   */
+  export type CursorPosition = {
+    startLine: number;
+    endLine: number;
+    startIndex: number;
+    endIndex: number;
+    /** When jumping lines up and down cursor position will adjust to EOL if the next line is shorter than the previous */
+    offset: number;
+  }
+
+  /** Indicates which key modifiers are being held down */
+  export type KeyModifiers = {
+    /** Indicates if Control key is being held down*/
+    ctrl: boolean;
+    /** Indicates if Shift key is being held down*/
+    shift: boolean;
+    /** Indicates if Alt key is being held down*/
+    alt: boolean;
+  }
+
+  export type SequenceHistory = {
+    key: string
+  } & KeyModifiers
 }

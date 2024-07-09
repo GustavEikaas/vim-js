@@ -28,7 +28,7 @@ export function Challenges() {
 
   return (
     <div>
-      <div style={{ height: "20px" }}>{challengeIndex + 1}/{challenges.length}</div>
+      <div style={{ height: "20px" }}>Challenge: {challengeIndex + 1}/{challenges.length}</div>
       <VimChallenge key={challenge.content + challenge.description} onFinished={(mappings) => {
         setChallengeIndex(challengeIndex + 1)
         setMappingsUsed(s => s + mappings)

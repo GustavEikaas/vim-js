@@ -59,7 +59,7 @@ function tryMatchSequence(mapping: Vim.Mapping, keys: Vim.SequenceHistory[]): fa
   if (!isValidMapping) return false;
 
   const possibleWildcard = reversedKeys.at(reversed.length);
-  const possibleNumbericWildcard = Number(possibleWildcard)
+  const possibleNumbericWildcard = Number(possibleWildcard?.key)
 
   //TODO: Handle negative numbers
   if (mapping.wildcards?.includes("range") && !isNaN(possibleNumbericWildcard)) {

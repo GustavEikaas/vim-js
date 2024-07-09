@@ -1,6 +1,7 @@
 name: Publish github page
 
 on:
+  workflow_dispatch:
   push:
     branches: ["main"]
 
@@ -14,28 +15,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - uses: pnpm/action-setup@v4
-        with:
-          version: 9.0.6
-
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: "pnpm"
-
-      - name: Install dependencies
-        shell: bash
-        run: pnpm install
+      - name: PNPM setup
+        uses: ./.github/actions/pnpm-setup
 
       - name: Build
         run: |
-          pnpm build
+          pnpm bundle
 
       - name: Setup Pages
         uses: actions/configure-pages@v3
@@ -43,7 +33,6 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          # Upload dist repository
           path: "./dist"
 
       - name: Deploy to GitHub Pages

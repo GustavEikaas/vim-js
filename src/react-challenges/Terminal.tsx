@@ -104,7 +104,7 @@ const LineNumbers = styled.div`
 `;
 type ChallengeProps = {
   challenge: Challenge;
-  onFinished: () => void;
+  onFinished: (mappings: number) => void;
 }
 
 const StyledCode = styled.code`
@@ -143,10 +143,10 @@ export const Challenge = ({ challenge, onFinished }: ChallengeProps) => {
 
   useEffect(() => {
     if (typeof (challenge.expected) == "function" && challenge.expected(vim)) {
-      onFinished()
+      onFinished(mappingsExecuted)
     }
     if (content.content.join("\n") == challenge.expected) {
-      onFinished()
+      onFinished(mappingsExecuted)
     }
   }, [content, mode, clipboard, challenge.expected])
 
@@ -156,7 +156,7 @@ export const Challenge = ({ challenge, onFinished }: ChallengeProps) => {
 
   return (
     <>
-      <MappingsUsed mappingsExecuted={mappingsExecuted} challenge={challenge} />
+      <MappingsUsed spent={mappingsExecuted} least={challenge.strokes} />
       <ProblemDescriptionContainer>{challenge.description}</ProblemDescriptionContainer>
       <StyledWrapper $focus={isFocused}>
         <CodePreviewContainer ref={ref => ref && setRef(ref)} tabIndex={0} onKeyDown={(e) => vim.sendKey(e.key, { shift: e.shiftKey, ctrl: e.ctrlKey, alt: e.altKey })}>
@@ -178,11 +178,11 @@ export const Challenge = ({ challenge, onFinished }: ChallengeProps) => {
 };
 
 type MappingsUsedProps = {
-  mappingsExecuted: number;
-  challenge: Challenge;
+  spent: number;
+  least: number;
 }
-const MappingsUsed = ({ mappingsExecuted, challenge }: MappingsUsedProps) => {
-  return (<div>Mappings used: <span style={{ color: mappingsExecuted > challenge.strokes ? draculaTheme.red : "inherit" }}>{mappingsExecuted}</span>/{challenge.strokes}</div>)
+export const MappingsUsed = ({ spent, least }: MappingsUsedProps) => {
+  return (<div>Mappings used: <span style={{ color: spent > least ? draculaTheme.red : "inherit" }}>{spent}</span>/{least}</div>)
 }
 
 const getVimModeColor = (mode: Vim.Mode) => {

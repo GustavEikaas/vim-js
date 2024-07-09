@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Challenge } from "./Terminal";
+import { Challenge, MappingsUsed } from "./Terminal";
 
 const challenges: Challenge[] = [
   {
@@ -74,15 +74,22 @@ const challenges: Challenge[] = [
 
 export function Challenges() {
   const [challengeIndex, setChallengeIndex] = useState(0)
+  const [mappingsUsed, setMappingsUsed] = useState(0);
   const challenge = challenges[challengeIndex]
   if (!challenge) {
-    return <div>Congratulations</div>
+    const leastPossibleMappings = challenges.reduce((acc, curr) => acc + curr.strokes, 0 as number)
+    return (
+      <div>
+        <h2>Finished</h2>
+        <MappingsUsed least={leastPossibleMappings} spent={mappingsUsed}/>
+      </div>)
   }
   return (
     <div>
       <div style={{ height: "20px" }}>{challengeIndex + 1}/{challenges.length}</div>
-      <Challenge key={challenge.content + challenge.description} onFinished={() => {
+      <Challenge key={challenge.content + challenge.description} onFinished={(mappings) => {
         setChallengeIndex(challengeIndex + 1)
+        setMappingsUsed(s => s + mappings)
       }} challenge={challenge} />
     </div>
   )

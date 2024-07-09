@@ -1,6 +1,6 @@
-import { Mapping } from "../vim/vim"
+import { Vim } from "../vim/vim"
 
-export const nmap: Mapping[] = [
+export const nmap: Vim.Mapping[] = [
   {
     seq: ["y", "y"],
     action: (vim) => vim.copyCurrentLine()
@@ -19,7 +19,7 @@ export const nmap: Mapping[] = [
   },
   {
     seq: ["h"],
-    modifiers: ["range"],
+    wildcards: ["range"],
     action: (vim, modifier) => {
       const count = modifier.range ?? 1
       vim.setLineIndex(-count)
@@ -27,7 +27,7 @@ export const nmap: Mapping[] = [
   },
   {
     seq: ["j"],
-    modifiers: ["range"],
+    wildcards: ["range"],
     action: (vim, modifier) => {
       const count = modifier.range ?? 1
       vim.setLineNumber(false, count)
@@ -35,7 +35,7 @@ export const nmap: Mapping[] = [
   },
   {
     seq: ["k"],
-    modifiers: ["range"],
+    wildcards: ["range"],
     action: (vim, modifier) => {
       const count = modifier.range ?? 1
       vim.setLineNumber(false, -count)
@@ -43,7 +43,7 @@ export const nmap: Mapping[] = [
   },
   {
     seq: ["l"],
-    modifiers: ["range"],
+    wildcards: ["range"],
     action: (vim, modifier) => {
       const count = modifier.range ?? 1
       vim.setLineIndex(count)
@@ -76,6 +76,13 @@ export const nmap: Mapping[] = [
     action: (vim) => vim.setMode("Insert")
   },
   {
+    seq: ["I"],
+    action: (vim) => {
+      vim.setLineIndex(0, "absolute")
+      vim.setMode("Insert")
+    }
+  },
+  {
     seq: ["v"],
     action: vim => vim.setMode("Visual")
   },
@@ -103,7 +110,7 @@ export const nmap: Mapping[] = [
     action: vim => vim.clipboard.paste()
   },
   {
-    seq: ["Control", "Shift", "Q"],
+    seq: ["<C-S-Q>"],
     action: (vim) => vim.setMode("V-Block")
   }
 ]

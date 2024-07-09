@@ -1,7 +1,7 @@
 import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { useVim } from './hooks/useVim'
 import styled, { keyframes } from 'styled-components';
-import { Vim, VimMode } from "../vim/vim";
+import { Vim } from "../vim/vim";
 
 export const draculaTheme = {
   background: '#282a36',
@@ -159,8 +159,7 @@ export const Challenge = ({ challenge, onFinished }: ChallengeProps) => {
       <MappingsUsed mappingsExecuted={mappingsExecuted} challenge={challenge} />
       <ProblemDescriptionContainer>{challenge.description}</ProblemDescriptionContainer>
       <StyledWrapper $focus={isFocused}>
-
-        <CodePreviewContainer ref={ref => ref && setRef(ref)} tabIndex={0} onKeyDown={(e) => vim.sendKey(e.key)}>
+        <CodePreviewContainer ref={ref => ref && setRef(ref)} tabIndex={0} onKeyDown={(e) => vim.sendKey(e.key, { shift: e.shiftKey, ctrl: e.ctrlKey, alt: e.altKey })}>
           <LineNumbers>
             {content.content.map((_, i) => `${i + 1}\n`)}
           </LineNumbers>
@@ -186,7 +185,7 @@ const MappingsUsed = ({ mappingsExecuted, challenge }: MappingsUsedProps) => {
   return (<div>Mappings used: <span style={{ color: mappingsExecuted > challenge.strokes ? draculaTheme.red : "inherit" }}>{mappingsExecuted}</span>/{challenge.strokes}</div>)
 }
 
-const getVimModeColor = (mode: VimMode) => {
+const getVimModeColor = (mode: Vim.Mode) => {
   switch (mode) {
     case "Normal":
       return draculaTheme.purple;
@@ -207,7 +206,7 @@ const StyledLuaLine = styled.div`
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
 `
-const StyledMode = styled.div<{ $mode: VimMode }>`
+const StyledMode = styled.div<{ $mode: Vim.Mode }>`
   text-transform: uppercase;
   border-bottom-left-radius: inherit;
   height: 20px;

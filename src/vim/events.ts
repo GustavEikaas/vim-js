@@ -1,4 +1,4 @@
-import { CursorPosition, VimMode } from "./vim"
+import { Vim } from "./vim"
 
 export type VimEvent = [
   OnContentChange,
@@ -16,12 +16,12 @@ export type OnContentChange = {
 
 export type OnCursorMove = {
   event: "OnCursorMove",
-  data: { cursorPos: CursorPosition }
+  data: { cursorPos: Vim.CursorPosition }
 }
 
 export type OnModeChange = {
   event: "OnModeChange",
-  data: { mode: VimMode, prevMode: VimMode }
+  data: { mode: Vim.Mode, prevMode: Vim.Mode }
 }
 
 export type OnMappingExecuted = {

@@ -12,7 +12,7 @@ jobs:
 
       - name: Preinstall pnpm
         shell: bash
-        run: npx i -g pnpm@latest
+        run: npx pnpm i -g pnpm@latest
 
       - name: Setup Node.js environment
         uses: actions/setup-node@v4

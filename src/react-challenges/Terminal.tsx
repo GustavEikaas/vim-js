@@ -81,7 +81,7 @@ const CodePreviewContainer = styled.div`
 `;
 
 const StyledHighlightRange = styled.span`
-animation: ${blink} 1s step-end infinite;
+  animation: ${blink} 1s step-end infinite;
 `
 
 export type Challenge = {

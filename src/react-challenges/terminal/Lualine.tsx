@@ -9,9 +9,9 @@ const getVimModeColor = (mode: Vim.Mode) => {
     case "Insert":
       return draculaTheme.green;
     case "Visual":
+    case "V-Block":
       return draculaTheme.yellow;
   }
-  return draculaTheme.cyan;
 }
 
 const StyledLuaLine = styled.div`

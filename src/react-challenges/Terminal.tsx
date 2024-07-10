@@ -25,7 +25,7 @@ export function Terminal({ vim }: TerminalProps) {
   }
 
   const rowVirtualizer = useVirtualizer({
-    count: content.content.length,
+    count: content.length,
     getScrollElement: () => codeContainer.current,
     estimateSize: () => 20,
   })
@@ -39,7 +39,7 @@ export function Terminal({ vim }: TerminalProps) {
     <StyledWrapper $focus={isFocused}>
       <CodePreviewContainer style={{ height: `100%` }} ref={ref => ref && setRef(ref)} tabIndex={0} onKeyDown={(e) => vim.sendKey(e.key, { shift: e.shiftKey, ctrl: e.ctrlKey, alt: e.altKey })}>
         <VirtualContainer $height={rowVirtualizer.getTotalSize()}>
-          {rowVirtualizer.getVirtualItems().map((virtualItem) => <MemoVirtualLine virtualItem={virtualItem} cursorPosition={cursorPos} content={content.content} />)}
+          {rowVirtualizer.getVirtualItems().map((virtualItem) => <MemoVirtualLine virtualItem={virtualItem} cursorPosition={cursorPos} content={content} />)}
         </VirtualContainer>
       </CodePreviewContainer>
       <Lualine mode={mode} />

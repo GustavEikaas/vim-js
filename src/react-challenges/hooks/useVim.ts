@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { Vim } from "../../vim/vim";
-import { getContent } from "../../helpers/get-content";
 
 export function useVim(vim: Vim) {
 
-  const [content, setContent] = useState(getContent(vim));
+  const [content, setContent] = useState(vim.content);
   const [cursorPos, setCursorPos] = useState(vim.cursor.pos);
   const [mode, setMode] = useState(vim.mode);
   const [clipboard, setClipboard] = useState(vim.clipboard.content);
@@ -24,11 +23,10 @@ export function useVim(vim: Vim) {
 
         case "OnCursorMove":
           setCursorPos(ev.data.cursorPos)
-          setContent(getContent(vim))
           break;
 
         case "OnContentChange":
-          setContent(getContent(vim))
+          setContent(ev.data.newContent)
           break;
 
         case "OnClipboardContentChange":

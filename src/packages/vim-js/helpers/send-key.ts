@@ -50,8 +50,9 @@ const handleKeyPress = (vim: Vim, onExecuted: VoidFunction) => {
   vim.clearSequence()
 }
 
-const ignoreKeys = ["Control", "Shift", "Alt"]
+const ignoreKeys = ["Control", "Shift", "Alt", "AltGraph"]
 export function sendKey(vim: Vim, [key, modifiers]: Args, onExecuted: VoidFunction) {
+  console.log(key)
   if (ignoreKeys.includes(key)) {
     return;
   }

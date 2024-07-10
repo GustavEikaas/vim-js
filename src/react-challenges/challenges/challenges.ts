@@ -11,7 +11,7 @@ export const challenges: Challenge[] = [
     strokes: 1,
     description: "Navigate to end of line 1",
     content: "Percy lived on a farm\nHe had many friends\nThey often played together\nLife was joyful",
-    expected: (vim) => vim.cursorPos.startLine == 0 && vim.cursorPos.startIndex == vim.content[0].length - 1
+    expected: (vim) => vim.cursor.pos.startLine == 0 && vim.cursor.pos.startIndex == vim.content[0].length - 1
   },
   {
     strokes: 1,
@@ -46,7 +46,7 @@ export const challenges: Challenge[] = [
     description: "Go to line 2",
     content: "The journey was long\nBut they were determined\nThey faced many challenges\nAnd overcame them all",
     expected: (vim) => {
-      return vim.cursorPos.startLine === 1;
+      return vim.cursor.pos.startLine === 1;
     }
   },
   {
@@ -54,19 +54,19 @@ export const challenges: Challenge[] = [
     description: "Move cursor to the right",
     content: "At last, they arrived\nThe treasure was real\nThey couldn't believe their eyes\nIt was a dream come true",
     expected: (vim) => {
-      return vim.cursorPos.startIndex === 1
+      return vim.cursor.pos.startIndex === 1
     }
   },
   {
     strokes: 1,
     description: "Navigate to end of buffer",
     content: "With the treasure found\nThey returned home\nTheir adventure was complete\nBut memories would last forever",
-    expected: (vim) => vim.cursorPos.startLine === vim.content.length - 1
+    expected: (vim) => vim.cursor.pos.startLine === vim.content.length - 1
   },
   {
     strokes: 2,
     description: "Navigate to end of line 3",
     content: "Percy was a brave pig\nHe loved discovering new places\nHis friends admired his courage\nThey often followed him on adventures",
-    expected: (vim) => vim.cursorPos.startLine == 2 && vim.cursorPos.startIndex == vim.content[2].length - 1
+    expected: (vim) => vim.cursor.pos.startLine == 2 && vim.cursor.pos.startIndex == vim.content[2].length - 1
   }
 ]

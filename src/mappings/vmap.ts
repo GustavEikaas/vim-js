@@ -6,5 +6,21 @@ export const vmap: Vim.Mapping[] = [
     action: vim => {
       vim.setMode("Normal")
     }
+  },
+  {
+    seq: ["I"],
+    action: vim => {
+      vim.cursor.setLineIndexNormal(0, "absolute")
+      vim.setMode("Insert")
+    }
+  },
+  {
+    seq: ["G"],
+    action: vim => {
+      vim.setCursorPosition({
+        ...vim.cursor.pos,
+        endLine: vim.content.length - 1
+      })
+    }
   }
 ]

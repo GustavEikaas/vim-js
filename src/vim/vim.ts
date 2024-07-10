@@ -7,7 +7,7 @@ import { paste, pasteBefore } from "../helpers/paste";
 import { prependContent } from "../helpers/prepend-content";
 import { prependLine } from "../helpers/prepend-line";
 import { sendKey } from "../helpers/send-key";
-import { setLineIndex } from "../helpers/set-line-index";
+import { setLineIndexNormal } from "../helpers/set-line-index";
 import { setMode } from "../helpers/set-mode";
 import { createSubscriptionChannel } from "../helpers/subscribe";
 import { imap } from "../mappings/imap";
@@ -30,7 +30,7 @@ export type Vim = {
   lastKeys: Vim.SequenceHistory[];
   content: string[];
   mode: Vim.Mode;
-  cursorPos: Vim.CursorPosition;
+  cursor: Vim.Cursor;
   clipboard: Clipboard;
   nMap: Vim.Mapping[];
   vMap: Vim.Mapping[];
@@ -46,8 +46,6 @@ export type Vim = {
   prependContent: (content?: string) => void;
 
   // Setters
-  setLineNumber: (resetX: boolean, count?: number, mode?: "relative" | "absolute") => void;
-  setLineIndex: (count?: number, mode?: "relative" | "absolute") => void;
   sendKey: (key: string, modifiers: Vim.KeyModifiers) => void;
   setContent: (val: string[]) => Readonly<Vim>
   setMode: (mode: Vim.Mode) => Readonly<Vim>
@@ -72,10 +70,13 @@ export const createVimInstance = (): Readonly<Vim> => {
     copyCurrentLine: () => copyLine(vim),
     deleteCurrentLine: () => deleteLine(vim),
     content: [],
-    setLineIndex: (count, mode) => vim.setCursorPosition(setLineIndex(vim, count, mode)),
-    setLineNumber: (resetX, count, mode) => {
-      const inc = incrementLineNumber(vim, resetX, count, mode)
-      vim.setCursorPosition(inc)
+    cursor: {
+      pos: { startLine: 0, startIndex: 0, endLine: 0, endIndex: 0, offset: 0 },
+      setLineIndexNormal: (count, mode) => vim.setCursorPosition(setLineIndexNormal(vim, count, mode)),
+      setLineNumberNormal: (resetX, count, mode) => {
+        const inc = incrementLineNumber(vim, resetX, count, mode)
+        vim.setCursorPosition(inc)
+      },
     },
     setContent: (newContent) => {
       vim.content = newContent
@@ -93,14 +94,13 @@ export const createVimInstance = (): Readonly<Vim> => {
         console.warn(`Invalid cursor position ${cursorPosition}`)
         return vim;
       }
-      vim.cursorPos = cursorPosition;
+      vim.cursor.pos = cursorPosition;
       notify({ event: "OnCursorMove", data: { cursorPos: cursorPosition } })
       return vim;
     },
     mode: "Normal",
     setMode: (mode) => setMode(mode, vim, (mode, prevMode) => notify({ event: "OnModeChange", data: { mode, prevMode } })),
-    cursorPos: { startLine: 0, startIndex: 0, endLine: 0, endIndex: 0, offset: 0 },
-    getCurrentLine: () => [vim.content[vim.cursorPos.startLine], vim.cursorPos.startLine, vim.content],
+    getCurrentLine: () => [vim.content[vim.cursor.pos.startLine], vim.cursor.pos.startLine, vim.content],
     prependLine: (content = " ") => prependLine(vim, content),
     appendLine: (content = " ") => appendLine(vim, content),
     appendContent: (content = " ") => appendContent(vim, content),
@@ -139,8 +139,8 @@ export const createVimInstance = (): Readonly<Vim> => {
 }
 
 function adjustCursorPosition(vim: Vim) {
-  if (!isValidCursorPosition(vim.cursorPos, vim)) {
-    vim.setLineNumber(false, -1)
+  if (!isValidCursorPosition(vim.cursor.pos, vim)) {
+    vim.cursor.setLineNumberNormal(false, -1)
   }
 }
 
@@ -166,9 +166,23 @@ export namespace Vim {
 
   /**
    * A vim keymapping
+   * @example
+   * ```
+   * {
+   *   seq: \["l"],
+   *   wildcards: \["range"],
+   *   action: (vim, modifier) => console.log("Lets do 'l' x ${modifier.range ?? 1} times")
+   * }
+   * ```
    */
   export type Mapping = {
-    /** An array of chars */
+    /**
+     * An array of keystrokes
+     * @example
+     * seq: \["Q"]
+     * seq: \["C-Q"] // Control + Q
+     * supported modifiers; Control(C), Shift(S), Alt(A)
+     */
     seq: string[];
     /** A list of wildcards that apply to the mapping */
     wildcards?: ["range"];
@@ -188,6 +202,38 @@ export namespace Vim {
     offset: number;
   }
 
+
+
+  export type Cursor = {
+    pos: CursorPosition;
+    /** 
+     * Sets a line number to the specified count
+     * @param resetX - if true sets cursor index to 0
+     * @param count - how many times to repeat the operation, defaults to 1
+     * @param mode - relative | absolute, relative performs the operation relative to current position
+     * @example
+     * ```
+     * setLineNumber(false, 1) //Increment line by 1
+     * setLineNumber(false, -1) //Decrement line by 1
+     * setLineNumber(false, 1, "absolute") //Set line to 1
+     * setLineNumber(false, -1, "absolute") // Set line to last line in buffer
+     * ```
+     */
+    setLineNumberNormal: (resetX: boolean, count?: number, mode?: "relative" | "absolute") => void;
+    /** 
+     * Sets a line index to the specified count or increments/decrements relative to specified count
+     * @param count - how many times to repeat the operation, defaults to 1
+     * @param mode - relative | absolute, relative performs the operation relative to current position
+     * @example
+     * ```
+     * setLineIndex(1) //Increment line index by 1
+     * setLineIndex(-1) //Decrement line index by 1
+     * setLineIndex(1, "absolute") //Set line index to 1
+     * setLineIndex(-1, "absolute") // Set line index to end of line
+     * ```
+     */
+    setLineIndexNormal: (count?: number, mode?: "relative" | "absolute") => void;
+  }
   /** Indicates which key modifiers are being held down */
   export type KeyModifiers = {
     /** Indicates if Control key is being held down*/
@@ -199,6 +245,11 @@ export namespace Vim {
   }
 
   export type SequenceHistory = {
+    /**
+     * The key visual name that was pressed
+     * @example
+     * 'Q'
+     */
     key: string
   } & KeyModifiers
 }

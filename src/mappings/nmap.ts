@@ -11,18 +11,18 @@ export const nmap: Vim.Mapping[] = [
   },
   {
     seq: ["G"],
-    action: (vim) => vim.setLineNumber(false, vim.content.length - 1, "absolute")
+    action: (vim) => vim.cursor.setLineNumberNormal(false, -1, "absolute")
   },
   {
     seq: ["g", "g"],
-    action: (vim) => vim.setLineNumber(false, 0, "absolute")
+    action: (vim) => vim.cursor.setLineNumberNormal(false, 0, "absolute")
   },
   {
     seq: ["h"],
     wildcards: ["range"],
     action: (vim, modifier) => {
       const count = modifier.range ?? 1
-      vim.setLineIndex(-count)
+      vim.cursor.setLineIndexNormal(-count)
     }
   },
   {
@@ -30,7 +30,7 @@ export const nmap: Vim.Mapping[] = [
     wildcards: ["range"],
     action: (vim, modifier) => {
       const count = modifier.range ?? 1
-      vim.setLineNumber(false, count)
+      vim.cursor.setLineNumberNormal(false, count)
     }
   },
   {
@@ -38,7 +38,7 @@ export const nmap: Vim.Mapping[] = [
     wildcards: ["range"],
     action: (vim, modifier) => {
       const count = modifier.range ?? 1
-      vim.setLineNumber(false, -count)
+      vim.cursor.setLineNumberNormal(false, -count)
     }
   },
   {
@@ -46,7 +46,7 @@ export const nmap: Vim.Mapping[] = [
     wildcards: ["range"],
     action: (vim, modifier) => {
       const count = modifier.range ?? 1
-      vim.setLineIndex(count)
+      vim.cursor.setLineIndexNormal(count)
     }
   },
   {
@@ -55,19 +55,18 @@ export const nmap: Vim.Mapping[] = [
   },
   {
     seq: ["0"],
-    action: vim => vim.setLineIndex(0, "absolute")
+    action: vim => vim.cursor.setLineIndexNormal(0, "absolute")
   },
   {
     seq: ["$"],
     action: vim => {
-      const i = vim.content[vim.cursorPos.endLine].length - 1
-      vim.setLineIndex(i, "absolute")
+      vim.cursor.setLineIndexNormal(-1, "absolute")
     }
   },
   {
     seq: ["a"],
     action: (vim) => {
-      vim.setLineIndex(1)
+      vim.cursor.setLineIndexNormal(1)
       vim.setMode("Insert")
     }
   },
@@ -78,7 +77,7 @@ export const nmap: Vim.Mapping[] = [
   {
     seq: ["I"],
     action: (vim) => {
-      vim.setLineIndex(0, "absolute")
+      vim.cursor.setLineIndexNormal(0, "absolute")
       vim.setMode("Insert")
     }
   },
@@ -90,7 +89,7 @@ export const nmap: Vim.Mapping[] = [
     seq: ["o"],
     action: (vim) => {
       vim.appendLine()
-      vim.setLineNumber(false, 1)
+      vim.cursor.setLineNumberNormal(false, 1)
       vim.setMode("Insert")
     }
   },

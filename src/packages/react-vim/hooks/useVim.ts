@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Vim } from "../../vim/vim";
+import { Vim } from "../../vim-js/vim";
 
 export function useVim(vim: Vim) {
 

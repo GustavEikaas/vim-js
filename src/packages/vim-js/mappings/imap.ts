@@ -1,4 +1,4 @@
-import { Vim } from "../vim/vim"
+import { Vim } from "../vim"
 
 export const imap: Vim.Mapping[] = [
   {

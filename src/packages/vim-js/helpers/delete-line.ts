@@ -1,4 +1,4 @@
-import { Vim } from "../vim/vim"
+import { Vim } from "../vim"
 
 export function deleteLine(vim: Vim) {
   const lines = vim.content as (string | null)[]

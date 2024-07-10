@@ -1,18 +1,18 @@
-import { appendContent } from "../helpers/append-content";
-import { appendLine } from "../helpers/append-line";
-import { copyLine } from "../helpers/copy-line";
-import { deleteLine } from "../helpers/delete-line";
-import { incrementLineNumber } from "../helpers/increment-line-number";
-import { paste, pasteBefore } from "../helpers/paste";
-import { prependContent } from "../helpers/prepend-content";
-import { prependLine } from "../helpers/prepend-line";
-import { sendKey } from "../helpers/send-key";
-import { setLineIndexNormal } from "../helpers/set-line-index";
-import { setMode } from "../helpers/set-mode";
-import { createSubscriptionChannel } from "../helpers/subscribe";
-import { imap } from "../mappings/imap";
-import { nmap } from "../mappings/nmap";
-import { vmap } from "../mappings/vmap";
+import { appendContent } from "./helpers/append-content";
+import { appendLine } from "./helpers/append-line";
+import { copyLine } from "./helpers/copy-line";
+import { deleteLine } from "./helpers/delete-line";
+import { incrementLineNumber } from "./helpers/increment-line-number";
+import { paste, pasteBefore } from "./helpers/paste";
+import { prependContent } from "./helpers/prepend-content";
+import { prependLine } from "./helpers/prepend-line";
+import { sendKey } from "./helpers/send-key";
+import { setLineIndexNormal } from "./helpers/set-line-index";
+import { setMode } from "./helpers/set-mode";
+import { createSubscriptionChannel } from "./helpers/subscribe";
+import { imap } from "./mappings/imap";
+import { nmap } from "./mappings/nmap";
+import { vmap } from "./mappings/vmap";
 import { VimEvent } from "./events";
 
 export type WildcardPayload = {
@@ -180,7 +180,7 @@ export namespace Vim {
      * An array of keystrokes
      * @example
      * seq: \["Q"]
-     * seq: \["C-Q"] // Control + Q
+     * seq: \["C-Q".// Control + Q
      * supported modifiers; Control(C), Shift(S), Alt(A)
      */
     seq: string[];
@@ -215,8 +215,8 @@ export namespace Vim {
      * ```
      * setLineNumber(false, 1) //Increment line by 1
      * setLineNumber(false, -1) //Decrement line by 1
-     * setLineNumber(false, 1, "absolute") //Set line to 1
-     * setLineNumber(false, -1, "absolute") // Set line to last line in buffer
+     * setLineNumber(false, 1, "absolute".//Set line to 1
+     * setLineNumber(false, -1, "absolute".// Set line to last line in buffer
      * ```
      */
     setLineNumberNormal: (resetX: boolean, count?: number, mode?: "relative" | "absolute") => void;
@@ -228,8 +228,8 @@ export namespace Vim {
      * ```
      * setLineIndex(1) //Increment line index by 1
      * setLineIndex(-1) //Decrement line index by 1
-     * setLineIndex(1, "absolute") //Set line index to 1
-     * setLineIndex(-1, "absolute") // Set line index to end of line
+     * setLineIndex(1, "absolute".//Set line index to 1
+     * setLineIndex(-1, "absolute".// Set line index to end of line
      * ```
      */
     setLineIndexNormal: (count?: number, mode?: "relative" | "absolute") => void;

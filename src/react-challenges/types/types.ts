@@ -1,4 +1,4 @@
-import { Vim } from "../../vim/vim";
+import { Vim } from "../../packages/vim-js/vim";
 
 export type Challenge = {
   description: string;

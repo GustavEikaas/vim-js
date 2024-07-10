@@ -1,4 +1,4 @@
-import { Vim } from "../../vim/vim";
+import { Vim } from "../../vim-js/vim"
 
 const getVimModeColor = (mode: Vim.Mode) => {
   switch (mode) {

@@ -1,4 +1,4 @@
-import { Vim } from "../vim/vim"
+import { Vim } from "../vim"
 
 export function paste(vim: Vim) {
   if (vim.clipboard.content) {

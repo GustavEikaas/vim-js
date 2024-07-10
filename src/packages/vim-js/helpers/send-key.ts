@@ -1,4 +1,4 @@
-import { Vim, WildcardPayload } from "../vim/vim";
+import { Vim, WildcardPayload } from "../vim";
 
 type Args = Parameters<Vim["sendKey"]>
 

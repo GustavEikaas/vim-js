@@ -15,6 +15,17 @@ export const challenges: Challenge[] = [
   },
   {
     strokes: 1,
+    description: "Move cursor to start of line",
+    content: "Once upon a time\nThere was a little pig named Percy\nPercy loved adventures\nOne day, he found a map\nThe map was very old and tattered\nBut it showed a path to a hidden treasure\nPercy's heart raced with excitement\nHe couldn't wait to follow the map\nPercy knew it would be dangerous\nBut he was ready for the adventure\nHe packed his bag and set off\nWith determination in his eyes\nHe traveled through forests and over mountains\nFacing many challenges along the way\nBut he never gave up\nAnd kept moving forward",
+    prepare: (vim) => {
+      vim.cursor.setLineIndexNormal(-1, "absolute")
+    },
+    expected: (vim) => {
+      return vim.cursor.pos.startLine === 0 && vim.cursor.pos.startIndex === 0
+    }
+  },
+  {
+    strokes: 1,
     description: "Enter insert mode",
     content: "Percy loved to explore\nEvery day was a new adventure\nHe discovered hidden paths\nAnd secret treasures\nExploration was in his blood\nHe couldn't stay in one place for long\nThe thrill of the unknown\nAlways called out to him\nEach discovery made him happier\nHe kept a journal of his adventures\nWriting down every detail\nSo he could relive the moments\nHis friends admired his courage\nAnd often joined him on his journeys\nTogether, they made wonderful memories\nThat they would cherish forever",
     expected: (vim) => vim.mode === "Insert"

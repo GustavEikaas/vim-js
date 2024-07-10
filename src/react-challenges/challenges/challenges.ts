@@ -4,12 +4,6 @@ export const challenges: Challenge[] = [
   {
     strokes: 1,
     description: "Delete line 1",
-    content: new Array(1000).fill("hello").join("\n"),
-    expected: "There was a little pig named Percy\nPercy loved adventures\nOne day, he found a map\nThe map was very old and tattered\nBut it showed a path to a hidden treasure\nPercy's heart raced with excitement\nHe couldn't wait to follow the map\nPercy knew it would be dangerous\nBut he was ready for the adventure\nHe packed his bag and set off\nWith determination in his eyes\nHe traveled through forests and over mountains\nFacing many challenges along the way\nBut he never gave up\nAnd kept moving forward"
-  },
-  {
-    strokes: 1,
-    description: "Delete line 1",
     content: "Once upon a time\nThere was a little pig named Percy\nPercy loved adventures\nOne day, he found a map\nThe map was very old and tattered\nBut it showed a path to a hidden treasure\nPercy's heart raced with excitement\nHe couldn't wait to follow the map\nPercy knew it would be dangerous\nBut he was ready for the adventure\nHe packed his bag and set off\nWith determination in his eyes\nHe traveled through forests and over mountains\nFacing many challenges along the way\nBut he never gave up\nAnd kept moving forward",
     expected: "There was a little pig named Percy\nPercy loved adventures\nOne day, he found a map\nThe map was very old and tattered\nBut it showed a path to a hidden treasure\nPercy's heart raced with excitement\nHe couldn't wait to follow the map\nPercy knew it would be dangerous\nBut he was ready for the adventure\nHe packed his bag and set off\nWith determination in his eyes\nHe traveled through forests and over mountains\nFacing many challenges along the way\nBut he never gave up\nAnd kept moving forward"
   },

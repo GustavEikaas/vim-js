@@ -5,4 +5,5 @@ export type Challenge = {
   content: string;
   expected: string | ((vim: Vim) => boolean);
   strokes: number;
+  prepare?: (vim: Vim) => void;
 }

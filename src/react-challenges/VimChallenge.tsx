@@ -23,7 +23,11 @@ type ChallengeProps = {
 }
 
 export const VimChallenge = ({ challenge, onFinished }: ChallengeProps) => {
-  const [vim] = useState(() => createVimInstance().setContent(challenge.content.split("\n")))
+  const [vim] = useState(() => {
+    const i = createVimInstance().setContent(challenge.content.split("\n"))
+    challenge.prepare && challenge.prepare(i)
+    return i;
+  })
   const { mappingsExecuted, cursorPos, content, mode, clipboard } = useVim(vim)
 
   useEffect(() => {
@@ -37,7 +41,7 @@ export const VimChallenge = ({ challenge, onFinished }: ChallengeProps) => {
 
 
   return (
-    <div style={{width: "clamp(400px, 50vw, 70vw)"}}>
+    <div style={{ width: "clamp(400px, 50vw, 70vw)" }}>
       <MappingsUsed spent={mappingsExecuted} least={challenge.strokes} />
       <ProblemDescriptionContainer>{challenge.description}</ProblemDescriptionContainer>
       <Terminal vim={vim} />

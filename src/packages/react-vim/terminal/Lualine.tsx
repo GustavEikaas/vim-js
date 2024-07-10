@@ -12,7 +12,6 @@ const getVimModeColor = (mode: Vim.Mode) => {
   }
 }
 
-
 function formatSequence(keypress: Vim.SequenceHistory) {
   if (keypress.alt || keypress.ctrl || keypress.shift) {
     return `<${keypress.ctrl ? "C-" : ""}${keypress.shift ? "S-" : ""}${keypress.alt ? "A-" : ""}${keypress.key}>`

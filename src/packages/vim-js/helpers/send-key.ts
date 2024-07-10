@@ -52,7 +52,6 @@ const handleKeyPress = (vim: Vim, onExecuted: VoidFunction) => {
 
 const ignoreKeys = ["Control", "Shift", "Alt", "AltGraph"]
 export function sendKey(vim: Vim, [key, modifiers]: Args, onExecuted: VoidFunction) {
-  console.log(key)
   if (ignoreKeys.includes(key)) {
     return;
   }
@@ -68,17 +67,18 @@ function tryMatchSequence(mapping: Vim.Mapping, keys: Vim.SequenceHistory[], ran
   const reversed = mapping.seq.toReversed()
   const reversedKeys = keys.toReversed()
 
-  const isValidMapping = reversed.every((s, i) => {
+  const isValidMapping = reversed.every((seqDef, i) => {
 
     // No modifiers
-    if (!s.includes("<")) {
-      return s === reversedKeys.at(i)?.key
+    if (!seqDef.includes("<")) {
+      const keyEvent = reversedKeys.at(i)
+      return seqDef === keyEvent?.key && !keyEvent.ctrl && !keyEvent.alt
     }
-    const isCtrl = s.includes("C-") ? reversedKeys.at(i)?.ctrl : true;
-    const isShift = s.includes("S-") ? reversedKeys.at(i)?.shift : true;
-    const isAlt = s.includes("A-") ? reversedKeys.at(i)?.alt : true;
+    const isCtrl = seqDef.includes("C-") ? reversedKeys.at(i)?.ctrl : true;
+    const isShift = seqDef.includes("S-") ? reversedKeys.at(i)?.shift : true;
+    const isAlt = seqDef.includes("A-") ? reversedKeys.at(i)?.alt : true;
 
-    return s.at(-2) === reversedKeys.at(i)?.key && isShift && isCtrl && isAlt
+    return seqDef.at(-2) === reversedKeys.at(i)?.key && isShift && isCtrl && isAlt
   })
 
   if (!isValidMapping) return false;

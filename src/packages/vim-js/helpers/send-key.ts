@@ -16,76 +16,112 @@ const getMap = (mode: Vim.Mode, vim: Vim) => {
   }
 }
 
-const handleKeyPress = (vim: Vim, onExecuted: VoidFunction) => {
-  const keyMap = getMap(vim.mode, vim)
-  const mappings = matchMappings(keyMap, vim)
-  if (!mappings) return
-  if (mappings.length > 1) {
-    console.warn("Duplicate mappings ", mappings)
-  }
-  const mapping = mappings[0]
-  console.debug(`${vim.mode} seq match [${mapping?.mapping?.seq.join(",")}]`, mapping.wildcard)
-  executeMapping(mapping.mapping, mapping.wildcard ?? {}, vim)
-  onExecuted()
+function somePartialMappings(vim: Vim, map: Vim.Mapping[], range: number | false) {
+  const lastKeys = range ? vim.sequence.slice(range.toString().length) : vim.sequence
+  const res = map.some(mapping => {
+    return lastKeys.every((value, i) => mapping.seq[i] === value.key && (!range || mapping.wildcards?.includes("range")))
+  })
+  return res;
 }
 
-const ignoreKeys = ["Control", "Shift", "Alt"]
+const handleKeyPress = (vim: Vim, onExecuted: VoidFunction) => {
+  const keyMap = getMap(vim.mode, vim)
+  const result = matchMappings(keyMap, vim)
+
+  if (typeof result === "number") {
+    return;
+  }
+
+  if (result.matches.length === 0) {
+    //find partial mappings
+    if (!somePartialMappings(vim, keyMap, result.range)) {
+      vim.clearSequence()
+    }
+    return;
+  }
+
+  if (result.matches.length > 1) {
+    console.error("Multiple mappings matched")
+  }
+  const mapping = result.matches[0]
+
+  executeMapping(mapping.mapping, mapping.wildcard ?? {}, vim)
+  onExecuted()
+  vim.clearSequence()
+}
+
+const ignoreKeys = ["Control", "Shift", "Alt", "AltGraph"]
 export function sendKey(vim: Vim, [key, modifiers]: Args, onExecuted: VoidFunction) {
   if (ignoreKeys.includes(key)) {
     return;
   }
-  vim.lastKeys.push({ key, ...modifiers })
+  vim.appendSequence({ key, ...modifiers })
   handleKeyPress(vim, onExecuted)
 }
 
-function tryMatchSequence(mapping: Vim.Mapping, keys: Vim.SequenceHistory[]): false | { mapping: Vim.Mapping, wildcard: WildcardPayload } {
+function tryMatchSequence(mapping: Vim.Mapping, keys: Vim.SequenceHistory[], range: number | undefined): false | { mapping: Vim.Mapping, wildcard: WildcardPayload } {
+  if (range && !mapping.wildcards?.includes("range")) {
+    return false;
+  }
+
   const reversed = mapping.seq.toReversed()
   const reversedKeys = keys.toReversed()
 
-  const isValidMapping = reversed.every((s, i) => {
-    // No modifiers
-    if (!s.includes("<")) {
-      return s === reversedKeys.at(i)?.key
-    }
-    const isCtrl = s.includes("C-") ? reversedKeys.at(i)?.ctrl : true;
-    const isShift = s.includes("S-") ? reversedKeys.at(i)?.shift : true;
-    const isAlt = s.includes("A-") ? reversedKeys.at(i)?.alt : true;
+  const isValidMapping = reversed.every((seqDef, i) => {
 
-    return s.at(-2) === reversedKeys.at(i)?.key && isShift && isCtrl && isAlt
+    // No modifiers
+    if (!seqDef.includes("<")) {
+      const keyEvent = reversedKeys.at(i)
+      return seqDef === keyEvent?.key && !keyEvent.ctrl && !keyEvent.alt
+    }
+    const isCtrl = seqDef.includes("C-") ? reversedKeys.at(i)?.ctrl : true;
+    const isShift = seqDef.includes("S-") ? reversedKeys.at(i)?.shift : true;
+    const isAlt = seqDef.includes("A-") ? reversedKeys.at(i)?.alt : true;
+
+    return seqDef.at(-2) === reversedKeys.at(i)?.key && isShift && isCtrl && isAlt
   })
 
   if (!isValidMapping) return false;
-
-  const possibleWildcard = reversedKeys.at(reversed.length);
-  const possibleNumbericWildcard = Number(possibleWildcard?.key)
-
-  //TODO: Handle negative numbers
-  if (mapping.wildcards?.includes("range") && !isNaN(possibleNumbericWildcard)) {
-    const totalNumber = reversedKeys.slice(reversed.length + 1).reduce((acc, curr) => {
-      if (!isNaN(Number(curr))) {
-        //Its reversed
-        return Number(`${curr}${acc}`)
-      }
-      return acc
-    }, possibleNumbericWildcard)
-
-    return { mapping, wildcard: { range: totalNumber } };
-  }
 
   return { mapping, wildcard: {} };
 }
 
 type MappingMatch = {
   mapping: Vim.Mapping;
-  partial: boolean;
   wildcard: WildcardPayload;
 }
 function executeMapping(mapping: Vim.Mapping, modifier: WildcardPayload, vim: Vim) {
   mapping?.action(vim, modifier)
-  vim.lastKeys = []
+  vim.sequence = []
 }
 
-function matchMappings(map: Vim.Mapping[], vim: Vim) {
+type SearchRange = {
+  isFull: boolean;
+  range: number;
+}
+function tryGetRange(vim: Vim): false | { isFull: boolean; range: number } {
+  const range = vim.sequence.reduce((acc, curr, index, list) => {
+    const possibleNumber = Number(curr.key)
+    /**
+     * possible number is defined, acc is either defined already or the number is not 0
+     * valid ranges can not start with 0
+     * */
+    if (!isNaN(possibleNumber) && (acc || possibleNumber > 0)) {
+      return acc ? { range: (acc.range * 10) + possibleNumber, isFull: list.length - 1 === index } : { range: possibleNumber, isFull: list.length - 1 === index };
+    } else {
+      return acc ? { isFull: false, range: acc.range } : false;
+    }
+  }, false as SearchRange | false)
+
+  return range
+}
+
+function matchMappings(map: Vim.Mapping[], vim: Vim): number | { matches: MappingMatch[], range: false | number } {
+  const range = tryGetRange(vim)
+  if (range && range.isFull) {
+    return range.range
+  }
+
   const init = {
     found: false,
   } as {
@@ -94,21 +130,18 @@ function matchMappings(map: Vim.Mapping[], vim: Vim) {
   }
 
   const value = map.reduce((res, curr) => {
-    const mapping = tryMatchSequence(curr, vim.lastKeys)
-    if (mapping) {
-      const match: MappingMatch = {
-        mapping: mapping.mapping,
-        wildcard: mapping.wildcard,
-        partial: false
-      }
+    const match = tryMatchSequence(curr, vim.sequence, range ? range.range : undefined)
+    if (match) {
       return {
         found: true,
         matches: [match].concat(res.matches ?? [])
       }
     }
-
     return res;
   }, init)
 
-  return value.matches;
+  return {
+    range: range ? range.range : false,
+    matches: value.matches ? value.matches.map(s => ({ ...s, wildcard: { range: range ? range.range : undefined } })) : []
+  }
 }

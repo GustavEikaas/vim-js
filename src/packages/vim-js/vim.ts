@@ -27,7 +27,9 @@ type Clipboard = {
 }
 
 export type Vim = {
-  lastKeys: Vim.SequenceHistory[];
+  sequence: Vim.SequenceHistory[];
+  appendSequence: (key: Vim.SequenceHistory) => void;
+  clearSequence: () => void;
   content: string[];
   mode: Vim.Mode;
   cursor: Vim.Cursor;
@@ -62,11 +64,19 @@ export const createVimInstance = (): Readonly<Vim> => {
   const { addSubscriber, notify } = createSubscriptionChannel<VimEvent>()
 
   const vim: Vim = {
+    clearSequence: () => {
+      vim.sequence = []
+      notify({ event: "OnSequenceChanged", data: { content: [] } })
+    },
+    appendSequence: (key) => {
+      vim.sequence.push(key)
+      notify({ event: "OnSequenceChanged", data: { content: vim.sequence } })
+    },
     addSubscriber: (cb, signal) => {
       addSubscriber(cb, signal)
       return vim;
     },
-    lastKeys: [],
+    sequence: [],
     copyCurrentLine: () => copyLine(vim),
     deleteCurrentLine: () => deleteLine(vim),
     content: [],

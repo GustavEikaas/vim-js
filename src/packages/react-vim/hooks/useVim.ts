@@ -2,17 +2,25 @@ import { useEffect, useState } from "react";
 import { Vim } from "../../vim-js/vim";
 
 export function useVim(vim: Vim) {
-
   const [content, setContent] = useState(vim.content);
   const [cursorPos, setCursorPos] = useState(vim.cursor.pos);
   const [mode, setMode] = useState(vim.mode);
   const [clipboard, setClipboard] = useState(vim.clipboard.content);
   const [mappingsExecuted, setMappingsExecuted] = useState(0);
+  const [sequence, setSequence] = useState<Vim.SequenceHistory[]>([]);
 
   useEffect(() => {
     const controller = new AbortController()
     vim.addSubscriber((ev) => {
       switch (ev.event) {
+        case "OnSequenceChanged":
+          if (ev.data.content.length === 0) {
+            setTimeout(() => { setSequence([]) }, 100)
+          } else {
+            setSequence([...ev.data.content])
+          }
+          break;
+
         case "OnModeChange":
           setMode(ev.data.mode)
           break;
@@ -45,6 +53,7 @@ export function useVim(vim: Vim) {
     clipboard,
     mode,
     mappingsExecuted,
-    vim
+    vim,
+    sequence
   }
 }

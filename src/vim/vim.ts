@@ -26,11 +26,14 @@ type Clipboard = {
   pasteBefore: VoidFunction;
 }
 
+
+
 export type Vim = {
   lastKeys: Vim.SequenceHistory[];
   content: string[];
   mode: Vim.Mode;
   cursor: Vim.Cursor;
+  commandWindow: Vim.CommandWindow;
   clipboard: Clipboard;
   nMap: Vim.Mapping[];
   vMap: Vim.Mapping[];
@@ -65,6 +68,18 @@ export const createVimInstance = (): Readonly<Vim> => {
     addSubscriber: (cb, signal) => {
       addSubscriber(cb, signal)
       return vim;
+    },
+    commandWindow: {
+      isOpen: false,
+      toggle: (open) => {
+        if (open === undefined) {
+          vim.commandWindow.isOpen = !vim.commandWindow.isOpen
+        } else {
+          vim.commandWindow.isOpen = open
+        }
+        notify({ event: "OnCommandToggle", data: { open: vim.commandWindow.isOpen } })
+      },
+      content: ""
     },
     lastKeys: [],
     copyCurrentLine: () => copyLine(vim),
@@ -164,6 +179,12 @@ export namespace Vim {
   /** The different vim modes*/
   export type Mode = "Normal" | "Insert" | "Visual" | "V-Block"
 
+  export type CommandWindow = {
+    isOpen: boolean;
+    content: string;
+    toggle: (open?: boolean) => void;
+  }
+
   /**
    * A vim keymapping
    * @example
@@ -201,8 +222,6 @@ export namespace Vim {
     /** When jumping lines up and down cursor position will adjust to EOL if the next line is shorter than the previous */
     offset: number;
   }
-
-
 
   export type Cursor = {
     pos: CursorPosition;

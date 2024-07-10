@@ -6,6 +6,12 @@ export const nmap: Vim.Mapping[] = [
     action: (vim) => vim.copyCurrentLine()
   },
   {
+    seq: [":"],
+    action: (vim) => {
+      vim.commandWindow.toggle(true)
+    }
+  },
+  {
     seq: ["d", "d"],
     action: (vim) => vim.deleteCurrentLine()
   },

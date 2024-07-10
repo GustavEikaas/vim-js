@@ -5,8 +5,14 @@ export type VimEvent = [
   OnModeChange,
   OnCursorMove,
   OnClipboardChange,
-  OnMappingExecuted
+  OnMappingExecuted,
+  OnCommandToggle
 ][number]
+
+export type OnCommandToggle = {
+  event: "OnCommandToggle",
+  data: { open: boolean }
+}
 
 
 export type OnContentChange = {

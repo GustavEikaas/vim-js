@@ -68,5 +68,11 @@ export const challenges: Challenge[] = [
     description: "Navigate to end of line 3",
     content: "Percy was a brave pig\nHe loved discovering new places\nHis friends admired his courage\nThey often followed him on adventures",
     expected: (vim) => vim.cursor.pos.startLine == 2 && vim.cursor.pos.startIndex == vim.content[2].length - 1
+  },
+  {
+    strokes: 1,
+    description: "Open the command window",
+    content: "Percy was a brave pig\nHe loved discovering new places\nHis friends admired his courage\nThey often followed him on adventures",
+    expected: (vim) => vim.commandWindow.isOpen
   }
 ]

@@ -98,14 +98,19 @@ type TerminalProps = {
 
 export function Terminal({ vim }: TerminalProps) {
   const pRef = useRef<HTMLDivElement>(null)
-  const { content, mode, cursorPos } = useVim(vim)
+  const { content, mode, cursorPos, isCommandOpen } = useVim(vim)
   const cRef = useRef<HTMLDivElement | null>(null);
+  const commandRef = useRef<HTMLInputElement | null>(null);
   const [isFocused, setIsFocused] = useState(false)
 
   const setRef = (ref: HTMLDivElement) => {
     if (cRef.current === ref) return;
     ref.onfocus = () => setIsFocused(true)
-    ref.onblur = () => setIsFocused(false)
+    ref.onblur = () => {
+      if (!isCommandOpen) {
+        setIsFocused(false)
+      }
+    }
     ref.focus()
     cRef.current = ref
   }
@@ -117,7 +122,17 @@ export function Terminal({ vim }: TerminalProps) {
 
   return (
     <StyledWrapper $focus={isFocused}>
-      <CodePreviewContainer ref={ref => ref && setRef(ref)} tabIndex={0} onKeyDown={(e) => vim.sendKey(e.key, { shift: e.shiftKey, ctrl: e.ctrlKey, alt: e.altKey })}>
+      <CodePreviewContainer ref={ref => ref && setRef(ref)} tabIndex={0} onKeyDown={(e) => !vim.commandWindow.isOpen && vim.sendKey(e.key, { shift: e.shiftKey, ctrl: e.ctrlKey, alt: e.altKey })}>
+        {isCommandOpen && (
+          <StyledCommandWindow ref={ref => {
+            if (!ref) return;
+            if (commandRef.current == ref) return
+            ref.onfocus = () => setIsFocused(true)
+            ref.onblur = () => vim.commandWindow.toggle(false)
+            ref.focus()
+            commandRef.current = ref;
+          }} />
+        )}
         <LineNumbers>
           {content.content.map((_, i) => `${i + 1}\n`)}
         </LineNumbers>
@@ -133,7 +148,22 @@ export function Terminal({ vim }: TerminalProps) {
     </StyledWrapper>
   )
 }
-
+const StyledCommandWindow = styled.input`
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50%;
+  height: 40px;
+  border: 1px solid ${draculaTheme.cyan};
+  outline: 1px solid ${draculaTheme.cyan};
+  color: white;
+  background: ${draculaTheme.background};
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  box-sizing: border-box;
+`
 const getVimModeColor = (mode: Vim.Mode) => {
   switch (mode) {
     case "Normal":

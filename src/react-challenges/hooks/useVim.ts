@@ -3,7 +3,7 @@ import { Vim } from "../../vim/vim";
 import { getContent } from "../../helpers/get-content";
 
 export function useVim(vim: Vim) {
-
+  const [isCommandOpen, setIsCommandOpen] = useState(vim.commandWindow.isOpen);
   const [content, setContent] = useState(getContent(vim));
   const [cursorPos, setCursorPos] = useState(vim.cursor.pos);
   const [mode, setMode] = useState(vim.mode);
@@ -16,6 +16,10 @@ export function useVim(vim: Vim) {
       switch (ev.event) {
         case "OnModeChange":
           setMode(ev.data.mode)
+          break;
+
+        case "OnCommandToggle":
+          setIsCommandOpen(ev.data.open)
           break;
 
         case "OnMappingExecuted":
@@ -48,6 +52,7 @@ export function useVim(vim: Vim) {
     clipboard,
     mode,
     mappingsExecuted,
+    isCommandOpen,
     vim
   }
 }

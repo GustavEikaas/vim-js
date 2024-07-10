@@ -28,6 +28,7 @@ export function Terminal({ vim }: TerminalProps) {
     count: content.length,
     getScrollElement: () => codeContainer.current,
     estimateSize: () => 20,
+    paddingStart: 10,
   })
 
   useLayoutEffect(() => {

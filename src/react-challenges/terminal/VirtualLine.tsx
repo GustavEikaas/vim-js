@@ -28,11 +28,19 @@ function VirtualLine({ virtualItem, content, cursorPosition }: VirtualLineProps)
 export const MemoVirtualLine = VirtualLine
 
 function getHl(pos: Vim.CursorPosition, line: string, index: number) {
+  if (pos.startLine < index && pos.endLine > index) {
+    return {
+      pre: "",
+      hl: line,
+      post: ""
+    }
+  }
   if (pos.startLine <= index && pos.endLine >= index) {
+    const end = pos.endLine > index ? undefined : pos.endIndex + 1
     return {
       pre: line.slice(0, pos.startIndex),
-      hl: line.slice(pos.startIndex, pos.endIndex + 1),
-      post: line.slice(pos.endIndex + 1)
+      hl: line.slice(pos.startIndex, end),
+      post: end ? line.slice(end) : ""
     }
   }
   return {

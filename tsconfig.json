@@ -7,7 +7,6 @@
     "lib": ["ESNEXT", "DOM", "DOM.Iterable"],
     "useDefineForClassFields": true,
     "skipLibCheck": true,
-
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,

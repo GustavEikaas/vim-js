@@ -180,7 +180,7 @@ export namespace Vim {
      * An array of keystrokes
      * @example
      * seq: \["Q"]
-     * seq: \["C-Q".// Control + Q
+     * seq: \["C-Q"]// Control + Q
      * supported modifiers; Control(C), Shift(S), Alt(A)
      */
     seq: string[];
@@ -215,8 +215,8 @@ export namespace Vim {
      * ```
      * setLineNumber(false, 1) //Increment line by 1
      * setLineNumber(false, -1) //Decrement line by 1
-     * setLineNumber(false, 1, "absolute".//Set line to 1
-     * setLineNumber(false, -1, "absolute".// Set line to last line in buffer
+     * setLineNumber(false, 1) "absolute".//Set line to 1
+     * setLineNumber(false, -1) "absolute".// Set line to last line in buffer
      * ```
      */
     setLineNumberNormal: (resetX: boolean, count?: number, mode?: "relative" | "absolute") => void;

@@ -14,7 +14,7 @@ export function Challenges() {
   if (isFinished) {
     const leastPossibleMappings = challenges.reduce((acc, curr) => acc + curr.strokes, 0 as number)
     return (
-      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+      <div className="flex flex-col gap-2.5">
         <h2>Finished</h2>
         <MappingsUsed least={leastPossibleMappings} spent={mappingsUsed} />
         <div>
@@ -28,15 +28,8 @@ export function Challenges() {
   }
 
   return (
-    <div style={{
-      height: "100%",
-      display: "flex",
-      width: "100%",
-      justifyContent: "center",
-      alignItems: "center",
-      flexDirection: "column"
-    }}>
-      <div style={{ height: "20px" }}>Challenge: {challengeIndex + 1}/{challenges.length}</div>
+    <div className="h-full flex w-full justify-center items-center flex-col">
+      <div>Challenge: {challengeIndex + 1}/{challenges.length}</div>
       <VimChallenge key={challenge.content + challenge.description} onFinished={(mappings) => {
         const inc = () => {
           setChallengeIndex(challengeIndex + 1)
@@ -44,6 +37,7 @@ export function Challenges() {
         }
         animation ? setTimeout(inc, 300) : inc()
       }} challenge={challenge} />
+      <Button onClick={() => setChallengeIndex(challenges.length)}>Speedrun</Button>
       <AnimationSelector animation={animation} setAnimation={setAnimation} />
     </div>
   )
@@ -55,7 +49,7 @@ type AnimationSelectorProps = {
 }
 const AnimationSelector = ({ animation, setAnimation }: AnimationSelectorProps) => {
   return (
-    <div style={{ display: "flex", flexDirection: "column", position: "absolute", bottom: 0, right: 0, }}>
+    <div className="flex flex-col absolute bottom-0 right-0">
       Animation
       <span>
         <input type="radio" checked={!!animation} onChange={() => setAnimation(true)} /> Smooth

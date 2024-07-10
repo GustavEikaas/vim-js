@@ -1,45 +1,26 @@
-import styled from "styled-components";
 import { Vim } from "../../vim/vim";
-import { draculaTheme } from "../theme/dracula";
 
 const getVimModeColor = (mode: Vim.Mode) => {
   switch (mode) {
     case "Normal":
-      return draculaTheme.purple;
+      return "bg-purple"
     case "Insert":
-      return draculaTheme.green;
+      return "bg-green"
     case "Visual":
     case "V-Block":
-      return draculaTheme.yellow;
+      return "bg-yellow"
   }
 }
-
-const StyledLuaLine = styled.div`
-  display: flex;
-  justifyContent: flex-start;
-  width: 100%;
-  box-sizing: border-box;
-  background-color: ${draculaTheme.background};
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-`
-const StyledMode = styled.div<{ $mode: Vim.Mode }>`
-  text-transform: uppercase;
-  border-bottom-left-radius: inherit;
-  height: 20px;
-  width: 8ch;
-  background-color: ${(props) => getVimModeColor(props.$mode)};
-  text-align: center;
-`
 
 type LualineProps = {
   mode: Vim.Mode;
 }
 export function Lualine({ mode }: LualineProps) {
+  const color = `uppercase rounded-bl-lg h-5 w-[8ch] ${getVimModeColor(mode)} text-center`
   return (
-    <StyledLuaLine>
-      <StyledMode $mode={mode}>{mode}</StyledMode>
-    </StyledLuaLine>
+    <div className="flex justify-start w-full box-border bg-background rounded-b-lg">
+      <div className={color}>{mode}</div>
+    </div>
 
   )
 }

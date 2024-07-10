@@ -1,0 +1,49 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+::-webkit-scrollbar {
+  width: 12px;
+  background: #282a36;
+}
+
+::-webkit-scrollbar-track {
+  background: #282a36;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-corner {
+  background: #282a36;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #6272a4;
+  border-radius: 10px;
+  border: 3px solid #44475a;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #50fa7b;
+}
+
+@font-face {
+  font-family: '0xProto';
+  src: url('./vim-js/fonts/0xProto-Regular.woff2') format('woff2'),
+       url('./vim-js/fonts/0xProto-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+* {
+  
+
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html, body {
+  height: 100%;
+}
+body {
+  min-height: 100vh;
+  font-family: '0xProto', Arial, sans-serif;
+}

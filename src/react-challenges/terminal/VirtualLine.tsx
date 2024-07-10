@@ -1,5 +1,4 @@
 import { VirtualItem } from "@tanstack/react-virtual"
-import { memo } from 'react'
 import styled, { keyframes } from "styled-components";
 import { draculaTheme } from "../theme/dracula";
 import { Vim } from "../../vim/vim";

@@ -28,8 +28,8 @@
 
 @font-face {
   font-family: '0xProto';
-  src: url('./vim-js/fonts/0xProto-Regular.woff2') format('woff2'),
-       url('./vim-js/fonts/0xProto-Regular.ttf') format('truetype');
+  src: url('/vim-js/0xProto-Regular.woff2') format('woff2'),
+       url('/vim-js/0xProto-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }

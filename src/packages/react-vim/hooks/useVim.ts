@@ -14,8 +14,13 @@ export function useVim(vim: Vim) {
     vim.addSubscriber((ev) => {
       switch (ev.event) {
         case "OnSequenceChanged":
-          setSequence(ev.data.content)
+          if (ev.data.content.length === 0) {
+            setTimeout(() => { setSequence([]) }, 100)
+          } else {
+            setSequence([...ev.data.content])
+          }
           break;
+
         case "OnModeChange":
           setMode(ev.data.mode)
           break;

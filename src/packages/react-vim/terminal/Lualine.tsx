@@ -20,7 +20,7 @@ export function Lualine({ mode, sequence }: LualineProps) {
   return (
     <div className="flex justify-between w-full box-border bg-background rounded-b-lg">
       <div className={`uppercase rounded-bl-lg h-5 w-[8ch] ${getVimModeColor(mode)} text-center`}>{mode}</div>
-      <div className={`uppercase rounded-br-lg h-5 w-[8ch] ${getVimModeColor(mode)} text-left`}>{sequence.map(s => s.key).join("")}</div>
+      <div className={`rounded-br-lg h-5 w-[8ch] ${getVimModeColor(mode)} text-left`}>{sequence.map(s => s.key).join("")}</div>
     </div>
 
   )

@@ -16,21 +16,34 @@ const getMap = (mode: Vim.Mode, vim: Vim) => {
   }
 }
 
+function somePartialMappings(vim: Vim, map: Vim.Mapping[], range: number | false) {
+  const lastKeys = range ? vim.sequence.slice(range.toString().length) : vim.sequence
+  const res = map.some(mapping => {
+    return lastKeys.every((value, i) => mapping.seq[i] === value.key && (!range || mapping.wildcards?.includes("range")))
+  })
+  return res;
+}
+
 const handleKeyPress = (vim: Vim, onExecuted: VoidFunction) => {
   const keyMap = getMap(vim.mode, vim)
-  const mappings = matchMappings(keyMap, vim)
-  if (typeof mappings === "number") {
-    return;
-  }
-  if (!mappings) {
-    vim.clearSequence()
+  const result = matchMappings(keyMap, vim)
+
+  if (typeof result === "number") {
     return;
   }
 
-  if (mappings.length > 1) {
+  if (result.matches.length === 0) {
+    //find partial mappings
+    if (!somePartialMappings(vim, keyMap, result.range)) {
+      vim.clearSequence()
+    }
+    return;
+  }
+
+  if (result.matches.length > 1) {
     console.error("Multiple mappings matched")
   }
-  const mapping = mappings[0]
+  const mapping = result.matches[0]
 
   executeMapping(mapping.mapping, mapping.wildcard ?? {}, vim)
   onExecuted()
@@ -93,7 +106,7 @@ function tryGetRange(vim: Vim): false | { isFull: boolean; range: number } {
      * valid ranges can not start with 0
      * */
     if (!isNaN(possibleNumber) && (acc || possibleNumber > 0)) {
-      return acc ? { range: (acc.range * 10) + possibleNumber, isFull: list.length - 1 === index } : {range: possibleNumber, isFull: list.length -1 === index};
+      return acc ? { range: (acc.range * 10) + possibleNumber, isFull: list.length - 1 === index } : { range: possibleNumber, isFull: list.length - 1 === index };
     } else {
       return acc ? { isFull: false, range: acc.range } : false;
     }
@@ -102,7 +115,7 @@ function tryGetRange(vim: Vim): false | { isFull: boolean; range: number } {
   return range
 }
 
-function matchMappings(map: Vim.Mapping[], vim: Vim): false | number | MappingMatch[] {
+function matchMappings(map: Vim.Mapping[], vim: Vim): number | { matches: MappingMatch[], range: false | number } {
   const range = tryGetRange(vim)
   if (range && range.isFull) {
     return range.range
@@ -126,5 +139,8 @@ function matchMappings(map: Vim.Mapping[], vim: Vim): false | number | MappingMa
     return res;
   }, init)
 
-  return value.matches ? value.matches.map(s => ({ ...s, wildcard: { range: range ? range.range : undefined } })) : false;
+  return {
+    range: range ? range.range : false,
+    matches: value.matches ? value.matches.map(s => ({ ...s, wildcard: { range: range ? range.range : undefined } })) : []
+  }
 }

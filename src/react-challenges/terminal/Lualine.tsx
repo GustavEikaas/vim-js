@@ -16,10 +16,9 @@ type LualineProps = {
   mode: Vim.Mode;
 }
 export function Lualine({ mode }: LualineProps) {
-  const color = `uppercase rounded-bl-lg h-5 w-[8ch] ${getVimModeColor(mode)} text-center`
   return (
     <div className="flex justify-start w-full box-border bg-background rounded-b-lg">
-      <div className={color}>{mode}</div>
+      <div className={`uppercase rounded-bl-lg h-5 w-[8ch] ${getVimModeColor(mode)} text-center`}>{mode}</div>
     </div>
 
   )

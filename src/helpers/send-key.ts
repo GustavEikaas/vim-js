@@ -14,7 +14,6 @@ const getMap = (mode: Vim.Mode, vim: Vim) => {
     case "V-Block":
       return vim.vMap
   }
-  return []
 }
 
 const handleKeyPress = (vim: Vim, onExecuted: VoidFunction) => {
@@ -36,7 +35,6 @@ export function sendKey(vim: Vim, [key, modifiers]: Args, onExecuted: VoidFuncti
     return;
   }
   vim.lastKeys.push({ key, ...modifiers })
-  console.log(`Key reg ${key}, keys: [${vim.lastKeys.map(s => JSON.stringify(s)).join(",")}]`)
   handleKeyPress(vim, onExecuted)
 }
 

@@ -37,7 +37,9 @@ export function Challenges() {
         }
         animation ? setTimeout(inc, 300) : inc()
       }} challenge={challenge} />
-      <Button onClick={() => setChallengeIndex(challenges.length)}>Speedrun</Button>
+      {window.location.host.includes("localhost") && (
+        <Button onClick={() => setChallengeIndex(challenges.length)}>Speedrun</Button>
+      )}
       <AnimationSelector animation={animation} setAnimation={setAnimation} />
     </div>
   )

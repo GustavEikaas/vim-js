@@ -1,26 +1,13 @@
-import styled from "styled-components";
-import { draculaTheme } from "../theme/dracula";
+import { ReactNode, ButtonHTMLAttributes } from "react";
 
-export const Button = styled.button`
-  background-color: ${draculaTheme.purple};
-  color: ${draculaTheme.foreground};
-  border: none;
-  border-radius: 5px;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
+type ButtonProps = {
+  children: ReactNode
+} & ButtonHTMLAttributes<HTMLButtonElement>
 
-  &:hover {
-    background-color: ${draculaTheme.background};
-  }
-
-  &:active {
-    background-color: ${draculaTheme.pink};
-  }
-
-  &:focus {
-    outline: none;
-    box-shadow: 0 0 0 2px ${draculaTheme.foreground};
-  }
-`;
+export const Button = ({ children, ...props }: ButtonProps) => {
+  return (
+    <button {...props} className="rounded-lg border-none bg-purple text-foreground py-2 px-4 text-sm cursor-pointer transition-colors duration-300 ease-in-out hover:bg-background active:bg-pink focus:outline-none">
+      {children}
+    </button>
+  )
+}

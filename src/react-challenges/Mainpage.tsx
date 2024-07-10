@@ -1,40 +1,22 @@
-import styled from "styled-components";
 import { Challenges } from "./Challenges";
 
 export function Mainpage() {
 
   return (
-    <StyledMainpage>
+    <div className="flex h-screen w-full bg-selection flex-col justify-between items-center">
       <Heading />
       <Challenges />
       <div />
-    </StyledMainpage>
+    </div>
   )
 }
 
 const Heading = () => {
   return (
-    <StyledHeading>
-      <h1>Learn vim</h1>
-    </StyledHeading>
+    <div className="flex w-full h-12 justify-between items-center border-box p-2.5">
+      <h1 className="text-4xl font-bold">Learn vim</h1>
+    </div>
   )
 }
 
-const StyledHeading = styled.div`
-  width: 100%;
-  height: 50px;
-  justify-content: space-between;
-  align-items: center;
-  box-sizing: border-box;
-  padding: 10px;
-`
-
-const StyledMainpage = styled.div`
-  background: #44475a;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-`
 

@@ -2,20 +2,8 @@ import { useEffect, useState } from "react";
 import { createVimInstance } from "../vim/vim";
 import { useVim } from "./hooks/useVim";
 import { Terminal } from "./Terminal";
-import { draculaTheme } from "./theme/dracula";
-import styled from "styled-components";
 import { Challenge } from "./types/types";
 import { MappingsUsed } from "./components/MappingsUsed";
-
-const ProblemDescriptionContainer = styled.div`
-  background: ${draculaTheme.currentLine};
-  color: ${draculaTheme.foreground};
-  padding: 16px;
-  border-radius: 8px;
-  margin-bottom: 16px;
-  font-size: 14px;
-  line-height: 1.5;
-`;
 
 type ChallengeProps = {
   challenge: Challenge;
@@ -43,7 +31,7 @@ export const VimChallenge = ({ challenge, onFinished }: ChallengeProps) => {
   return (
     <div style={{ width: "clamp(400px, 50vw, 70vw)" }}>
       <MappingsUsed spent={mappingsExecuted} least={challenge.strokes} />
-      <ProblemDescriptionContainer>{challenge.description}</ProblemDescriptionContainer>
+      <div className="bg-current text-foreground p-4 text-xl">{challenge.description}</div>
       <Terminal vim={vim} />
     </div>
   );

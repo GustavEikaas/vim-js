@@ -37,33 +37,21 @@ export function Terminal({ vim }: TerminalProps) {
 
 
   return (
-    <StyledWrapper $focus={isFocused}>
-      <CodePreviewContainer style={{ height: `100%` }} ref={ref => ref && setRef(ref)} tabIndex={0} onKeyDown={(e) => vim.sendKey(e.key, { shift: e.shiftKey, ctrl: e.ctrlKey, alt: e.altKey })}>
-        <VirtualContainer $height={rowVirtualizer.getTotalSize()}>
+    <div style={{ filter: !isFocused ? "opacity(50%)" : undefined }} className="relative flex items-center flex-col h-500 w-full" >
+      <pre 
+        className="focus:outline-none bg-background text-foreground box-border rounded-t-lg overflow-auto font-mono text-base leading-relaxed whitespace-pre relative min-w-full h-full"
+        ref={ref => ref && setRef(ref)}
+        tabIndex={0}
+        onKeyDown={(e) => vim.sendKey(e.key, { shift: e.shiftKey, ctrl: e.ctrlKey, alt: e.altKey })}
+      >
+        <div className="relative w-full" style={{ height: `${rowVirtualizer.getTotalSize()}px` }}>
           {rowVirtualizer.getVirtualItems().map((virtualItem) => <MemoVirtualLine key={virtualItem.key} virtualItem={virtualItem} cursorPosition={cursorPos} content={content} />)}
-        </VirtualContainer>
-      </CodePreviewContainer>
+        </div>
+      </pre>
       <Lualine mode={mode} />
-    </StyledWrapper>
+    </div>
   )
 }
-
-const VirtualContainer = styled.div<{ $height: number }>`
-  height: ${(props) => `${props.$height}px`};
-  width: 100%;
-  position: relative;
-`
-
-const StyledWrapper = styled.div<{ $focus: boolean }>`
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  height: 500px;
-  width: 100%;
-  filter: ${({ $focus }) => !$focus ? "opacity(50%)" : undefined};
-  position: relative;
-}
-`
 
 const CodePreviewContainer = styled.pre`
   &:focus {
@@ -83,23 +71,4 @@ const CodePreviewContainer = styled.pre`
   position: relative;
   min-width: 100%;
   min-height: 50%;
-
-  &::-webkit-scrollbar {
-    width: 12px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: ${draculaTheme.background};
-    border-radius: 10px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: ${draculaTheme.comment};
-    border-radius: 10px;
-    border: 3px solid ${draculaTheme.selection};
-  }
-
-  &::-webkit-scrollbar-thumb:hover {
-    background-color: ${draculaTheme.green};
-  }
-`;
+  `;

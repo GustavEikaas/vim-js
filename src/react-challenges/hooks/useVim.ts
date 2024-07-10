@@ -30,7 +30,6 @@ export function useVim(vim: Vim) {
           break;
 
         case "OnClipboardContentChange":
-          console.log("Clipboard change")
           setClipboard(ev.data.content)
           break;
       }

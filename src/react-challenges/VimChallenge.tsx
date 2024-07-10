@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { createVimInstance } from "../vim/vim";
-import { useVim } from "./hooks/useVim";
-import { Terminal } from "./Terminal";
 import { Challenge } from "./types/types";
 import { MappingsUsed } from "./components/MappingsUsed";
+import { createVimInstance } from "../packages/vim-js/vim";
+import { Terminal } from "../packages/react-vim/Terminal";
+import { useVim } from "../packages/react-vim/hooks/useVim";
 
 type ChallengeProps = {
   challenge: Challenge;
@@ -16,6 +16,7 @@ export const VimChallenge = ({ challenge, onFinished }: ChallengeProps) => {
     challenge.prepare && challenge.prepare(i)
     return i;
   })
+
   const { mappingsExecuted, cursorPos, content, mode, clipboard } = useVim(vim)
 
   useEffect(() => {

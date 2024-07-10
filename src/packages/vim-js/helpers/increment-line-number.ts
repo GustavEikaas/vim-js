@@ -1,4 +1,4 @@
-import { Vim } from "../vim/vim"
+import { Vim } from "../vim"
 
 function getAbsoluteIndex(count: number, length: number) {
   if (count === -1) {

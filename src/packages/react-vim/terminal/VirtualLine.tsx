@@ -1,7 +1,7 @@
 import { VirtualItem } from "@tanstack/react-virtual"
 import styled, { keyframes } from "styled-components";
 import { draculaTheme } from "../theme/dracula";
-import { Vim } from "../../vim/vim";
+import { Vim } from "../../vim-js/vim";
 
 type VirtualLineProps = {
   virtualItem: VirtualItem<Element>;

@@ -1,4 +1,4 @@
-import { Vim } from "../vim/vim";
+import { Vim } from "../vim";
 
 export function setMode(mode: Vim.Mode, vim: Vim, onModeChange: (mode: Vim.Mode, prevMode: Vim.Mode) => void) {
   switch (mode) {

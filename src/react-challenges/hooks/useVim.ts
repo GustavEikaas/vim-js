@@ -5,7 +5,7 @@ import { getContent } from "../../helpers/get-content";
 export function useVim(vim: Vim) {
 
   const [content, setContent] = useState(getContent(vim));
-  const [cursorPos, setCursorPos] = useState(vim.cursorPos);
+  const [cursorPos, setCursorPos] = useState(vim.cursor.pos);
   const [mode, setMode] = useState(vim.mode);
   const [clipboard, setClipboard] = useState(vim.clipboard.content);
   const [mappingsExecuted, setMappingsExecuted] = useState(0);

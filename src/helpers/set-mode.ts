@@ -4,9 +4,9 @@ export function setMode(mode: Vim.Mode, vim: Vim, onModeChange: (mode: Vim.Mode,
   switch (mode) {
     case "Normal":
       vim.setCursorPosition({
-        ...vim.cursorPos,
-        endLine: vim.cursorPos.startLine,
-        endIndex: vim.cursorPos.startIndex
+        ...vim.cursor.pos,
+        endLine: vim.cursor.pos.startLine,
+        endIndex: vim.cursor.pos.startIndex
       })
       break;
 

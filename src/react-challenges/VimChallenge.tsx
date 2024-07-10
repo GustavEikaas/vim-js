@@ -37,7 +37,7 @@ export const VimChallenge = ({ challenge, onFinished }: ChallengeProps) => {
 
 
   return (
-    <div>
+    <div style={{width: "clamp(400px, 50vw, 70vw)"}}>
       <MappingsUsed spent={mappingsExecuted} least={challenge.strokes} />
       <ProblemDescriptionContainer>{challenge.description}</ProblemDescriptionContainer>
       <Terminal vim={vim} />

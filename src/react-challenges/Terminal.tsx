@@ -59,7 +59,7 @@ const StyledWrapper = styled.div<{ $focus: boolean }>`
   align-items: center;
   flex-direction: column;
   height: 500px;
-  min-width: 50vw;
+  width: 100%;
   filter: ${({ $focus }) => !$focus ? "opacity(50%)" : undefined};
   position: relative;
 }

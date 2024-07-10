@@ -12,7 +12,7 @@ type TerminalProps = {
 }
 
 export function Terminal({ vim }: TerminalProps) {
-  const { content, mode, cursorPos } = useVim(vim)
+  const { content, mode, cursorPos, sequence } = useVim(vim)
   const codeContainer = useRef<HTMLElement | null>(null);
   const [isFocused, setIsFocused] = useState(false)
 
@@ -48,7 +48,7 @@ export function Terminal({ vim }: TerminalProps) {
           {rowVirtualizer.getVirtualItems().map((virtualItem) => <MemoVirtualLine key={virtualItem.key} virtualItem={virtualItem} cursorPosition={cursorPos} content={content} />)}
         </div>
       </pre>
-      <Lualine mode={mode} />
+      <Lualine mode={mode} sequence={sequence} />
     </div>
   )
 }

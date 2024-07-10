@@ -5,7 +5,8 @@ export type VimEvent = [
   OnModeChange,
   OnCursorMove,
   OnClipboardChange,
-  OnMappingExecuted
+  OnMappingExecuted,
+  OnSequenceChanged
 ][number]
 
 
@@ -34,3 +35,7 @@ export type OnClipboardChange = {
   data: { content: string | null }
 }
 
+export type OnSequenceChanged = {
+  event: "OnSequenceChanged",
+  data: { content: Vim.SequenceHistory[] }
+}

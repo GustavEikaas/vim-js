@@ -1,18 +1,58 @@
 import { useLayoutEffect, useRef, useState } from "react"
 import { useVim } from './hooks/useVim'
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import { Vim } from "../vim/vim";
 import { draculaTheme } from "./theme/dracula";
+import { useVirtualizer } from "@tanstack/react-virtual";
+import { Lualine } from "./terminal/Lualine";
+import { MemoVirtualLine } from "./terminal/VirtualLine";
 
-const blink = keyframes`
-  from, to {
-    color: white;
+type TerminalProps = {
+  vim: Vim;
+}
+
+export function Terminal({ vim }: TerminalProps) {
+  const { content, mode, cursorPos } = useVim(vim)
+  const codeContainer = useRef<HTMLElement | null>(null);
+  const [isFocused, setIsFocused] = useState(false)
+
+  const setRef = (ref: HTMLElement) => {
+    if (codeContainer.current === ref) return;
+    ref.onfocus = () => setIsFocused(true)
+    ref.onblur = () => setIsFocused(false)
+    ref.focus()
+    codeContainer.current = ref
   }
-  50% {
-    background-color: white;
-    color: black;
-  }
-`;
+
+  const rowVirtualizer = useVirtualizer({
+    count: content.length,
+    getScrollElement: () => codeContainer.current,
+    estimateSize: () => 20,
+    paddingStart: 10,
+  })
+
+  useLayoutEffect(() => {
+    rowVirtualizer.scrollToIndex(cursorPos.endLine, { align: "auto", behavior: "auto" })
+  }, [cursorPos])
+
+
+  return (
+    <StyledWrapper $focus={isFocused}>
+      <CodePreviewContainer style={{ height: `100%` }} ref={ref => ref && setRef(ref)} tabIndex={0} onKeyDown={(e) => vim.sendKey(e.key, { shift: e.shiftKey, ctrl: e.ctrlKey, alt: e.altKey })}>
+        <VirtualContainer $height={rowVirtualizer.getTotalSize()}>
+          {rowVirtualizer.getVirtualItems().map((virtualItem) => <MemoVirtualLine key={virtualItem.key} virtualItem={virtualItem} cursorPosition={cursorPos} content={content} />)}
+        </VirtualContainer>
+      </CodePreviewContainer>
+      <Lualine mode={mode} />
+    </StyledWrapper>
+  )
+}
+
+const VirtualContainer = styled.div<{ $height: number }>`
+  height: ${(props) => `${props.$height}px`};
+  width: 100%;
+  position: relative;
+`
 
 const StyledWrapper = styled.div<{ $focus: boolean }>`
   display: flex;
@@ -25,13 +65,12 @@ const StyledWrapper = styled.div<{ $focus: boolean }>`
 }
 `
 
-const CodePreviewContainer = styled.div`
+const CodePreviewContainer = styled.pre`
   &:focus {
     outline: none;
   }
   background: ${draculaTheme.background};
   color: ${draculaTheme.foreground};
-  padding: 16px;
   box-sizing: border-box;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
@@ -42,7 +81,6 @@ const CodePreviewContainer = styled.div`
   white-space: pre;
   counter-reset: line;
   position: relative;
-  padding-left: 40px; /* Space for line numbers */
   min-width: 100%;
   min-height: 50%;
 
@@ -65,102 +103,3 @@ const CodePreviewContainer = styled.div`
     background-color: ${draculaTheme.green};
   }
 `;
-
-const StyledHighlightRange = styled.span`
-  animation: ${blink} 1s step-end infinite;
-`
-
-const LineNumbers = styled.div`
-  position: absolute;
-  left: 0px;
-  top: 16px;
-  bottom: 16px;
-  width: 24px;
-  text-align: right;
-  color: ${draculaTheme.comment};
-  pointer-events: none; /* Allow text selection without interfering */
-  line-height: 1.5669
-`;
-
-const StyledCode = styled.code`
-  .comment { color: ${draculaTheme.comment}; }
-  .keyword { color: ${draculaTheme.pink}; }
-  .string { color: ${draculaTheme.yellow}; }
-  .variable { color: ${draculaTheme.orange}; }
-  .function { color: ${draculaTheme.green}; }
-  .operator { color: ${draculaTheme.purple}; }
-  .number { color: ${draculaTheme.cyan}; }
-`;
-
-type TerminalProps = {
-  vim: Vim;
-}
-
-export function Terminal({ vim }: TerminalProps) {
-  const pRef = useRef<HTMLDivElement>(null)
-  const { content, mode, cursorPos } = useVim(vim)
-  const cRef = useRef<HTMLDivElement | null>(null);
-  const [isFocused, setIsFocused] = useState(false)
-
-  const setRef = (ref: HTMLDivElement) => {
-    if (cRef.current === ref) return;
-    ref.onfocus = () => setIsFocused(true)
-    ref.onblur = () => setIsFocused(false)
-    ref.focus()
-    cRef.current = ref
-  }
-
-  useLayoutEffect(() => {
-    pRef.current?.scrollIntoView({ behavior: "instant", block: "center" })
-  }, [cursorPos])
-
-
-  return (
-    <StyledWrapper $focus={isFocused}>
-      <CodePreviewContainer ref={ref => ref && setRef(ref)} tabIndex={0} onKeyDown={(e) => vim.sendKey(e.key, { shift: e.shiftKey, ctrl: e.ctrlKey, alt: e.altKey })}>
-        <LineNumbers>
-          {content.content.map((_, i) => `${i + 1}\n`)}
-        </LineNumbers>
-        <StyledCode>
-          {content.before.join("\n")}
-          <StyledHighlightRange ref={pRef}>{content.highlighted.at(0) == "" ? " " : content.highlighted.join("\n")}</StyledHighlightRange>
-          {content.after.join("\n")}
-        </StyledCode>
-      </CodePreviewContainer>
-      <StyledLuaLine>
-        <StyledMode $mode={mode}>{mode}</StyledMode>
-      </StyledLuaLine>
-    </StyledWrapper>
-  )
-}
-
-const getVimModeColor = (mode: Vim.Mode) => {
-  switch (mode) {
-    case "Normal":
-      return draculaTheme.purple;
-    case "Insert":
-      return draculaTheme.green;
-    case "Visual":
-      return draculaTheme.yellow;
-  }
-  return draculaTheme.cyan;
-}
-
-const StyledLuaLine = styled.div`
-  display: flex;
-  justifyContent: flex-start;
-  width: 100%;
-  box-sizing: border-box;
-  background-color: ${draculaTheme.background};
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-`
-const StyledMode = styled.div<{ $mode: Vim.Mode }>`
-  text-transform: uppercase;
-  border-bottom-left-radius: inherit;
-  height: 20px;
-  width: 8ch;
-  background-color: ${(props) => getVimModeColor(props.$mode)};
-  text-align: center;
-`
-

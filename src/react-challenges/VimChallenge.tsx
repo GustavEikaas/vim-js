@@ -24,16 +24,16 @@ type ChallengeProps = {
 
 export const VimChallenge = ({ challenge, onFinished }: ChallengeProps) => {
   const [vim] = useState(() => createVimInstance().setContent(challenge.content.split("\n")))
-  const { mappingsExecuted, content, mode, clipboard } = useVim(vim)
+  const { mappingsExecuted, cursorPos, content, mode, clipboard } = useVim(vim)
 
   useEffect(() => {
     if (typeof (challenge.expected) == "function" && challenge.expected(vim)) {
       onFinished(mappingsExecuted)
     }
-    if (content.content.join("\n") == challenge.expected) {
+    if (content.join("\n") == challenge.expected) {
       onFinished(mappingsExecuted)
     }
-  }, [content, mode, clipboard, challenge.expected])
+  }, [content, cursorPos, mode, clipboard, challenge.expected])
 
 
   return (

@@ -191,6 +191,7 @@ export namespace Vim {
      * @example
      * seq: \["Q"]
      * seq: \["C-Q"]// Control + Q
+     * seq: \["r", "*"] // r + any char
      * supported modifiers; Control(C), Shift(S), Alt(A)
      */
     seq: string[];

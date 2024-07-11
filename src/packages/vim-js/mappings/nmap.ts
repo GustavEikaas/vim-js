@@ -25,7 +25,7 @@ export const nmap: Vim.Mapping[] = [
     seq: ["r", "*"],
     action: (vim) => {
       const v = vim.sequence.at(-1)
-      if (!v?.key) return;
+      if (!v?.key || v.key.length > 1) return;
       const newContent = vim.content
       const lineIndex = vim.cursor.pos.startLine;
       const charIndex = vim.cursor.pos.startIndex

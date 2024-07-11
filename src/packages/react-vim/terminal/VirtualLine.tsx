@@ -1,5 +1,5 @@
 import { VirtualItem } from "@tanstack/react-virtual"
-import styled, { keyframes } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import { draculaTheme } from "../theme/dracula";
 import { Vim } from "../../vim-js/vim";
 
@@ -7,8 +7,9 @@ type VirtualLineProps = {
   virtualItem: VirtualItem<Element>;
   content: string[];
   cursorPosition: Vim.CursorPosition
+  mode: Vim.Mode;
 }
-function VirtualLine({ virtualItem, content, cursorPosition }: VirtualLineProps) {
+function VirtualLine({ virtualItem, mode, content, cursorPosition }: VirtualLineProps) {
   const line = content[virtualItem.index]
   const { pre, hl, post } = getHl(cursorPosition, line, virtualItem.index)
   return (
@@ -18,7 +19,7 @@ function VirtualLine({ virtualItem, content, cursorPosition }: VirtualLineProps)
       $line={`${virtualItem.index + 1}`}
       key={virtualItem.key}
     >
-      {pre}<StyledHighlightRange>{hl.at(0) === "" ? " " : hl}</StyledHighlightRange>{post}
+      {pre}<StyledHighlightRange $single={mode === "Normal"}>{hl.at(0) === "" ? " " : hl}</StyledHighlightRange>{post}
     </StyledVirtualLine>
   )
 }
@@ -27,6 +28,9 @@ function VirtualLine({ virtualItem, content, cursorPosition }: VirtualLineProps)
 export const MemoVirtualLine = VirtualLine
 
 function getHl(pos: Vim.CursorPosition, line: string, index: number) {
+  if (index === 7) {
+    // debugger;
+  }
   if (pos.startLine < index && pos.endLine > index) {
     return {
       pre: "",
@@ -36,9 +40,10 @@ function getHl(pos: Vim.CursorPosition, line: string, index: number) {
   }
   if (pos.startLine <= index && pos.endLine >= index) {
     const end = pos.endLine > index ? undefined : pos.endIndex + 1
+    const startIndex = pos.startLine !== pos.endLine && index === pos.endLine ? 0 : pos.startIndex 
     return {
-      pre: line.slice(0, pos.startIndex),
-      hl: line.slice(pos.startIndex, end),
+      pre: line.slice(0, startIndex),
+      hl: line.slice(startIndex, end),
       post: end ? line.slice(end) : ""
     }
   }
@@ -82,7 +87,15 @@ const blink = keyframes`
   }
 `;
 
-const StyledHighlightRange = styled.span`
+const normalModeCursor = css`
   animation: ${blink} 1s step-end infinite;
 `
 
+const visualSelection = css`
+  background-color: white;
+  color: black;
+`
+
+const StyledHighlightRange = styled.span<{ $single: boolean }>`
+  ${props => (props.$single ? normalModeCursor : visualSelection)};
+`

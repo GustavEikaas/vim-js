@@ -45,13 +45,13 @@ const handleKeyPress = (vim: Vim, onExecuted: VoidFunction) => {
 
 function somePartialMappings(vim: Vim, map: Vim.Mapping[], range: number | false) {
   const lastKeys = range ? vim.sequence.slice(range.toString().length) : vim.sequence
-  const res = map.some(mapping => {
+
+  return map.some(mapping => {
     return lastKeys.every((value, i) => {
       const char = mapping.seq[i]
-      return (char === value.key || char === "*") && (!range || mapping.wildcards?.includes("range"))
+      return isKeyEqual(char, value) && (!range || mapping.wildcards?.includes("range"))
     })
   })
-  return res;
 }
 
 function tryGetMapping(mapping: Vim.Mapping, keys: Vim.SequenceHistory[], range: number | undefined): false | { mapping: Vim.Mapping, wildcard: WildcardPayload } {

@@ -38,7 +38,12 @@ export function Challenges() {
         animation ? setTimeout(inc, 300) : inc()
       }} challenge={challenge} />
       {window.location.host.includes("localhost") && (
-        <Button onClick={() => setChallengeIndex(challenges.length)}>Speedrun</Button>
+        <>
+          <span className="flex gap-2">
+            <Button onClick={() => setChallengeIndex(challenges.length)}>Speedrun</Button>
+            <Button onClick={() => setChallengeIndex(challenges.length - 1)}>last</Button>
+          </span>
+        </>
       )}
       <AnimationSelector animation={animation} setAnimation={setAnimation} />
     </div>

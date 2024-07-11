@@ -60,8 +60,13 @@ function bracketPair(vim: Vim): BracketPairMatch | undefined {
     return
   }
   const closestPair = closestBracketPairsOnSameLine.reduce((closest, current) => {
-    //BUG: Also check which one is closest to cursor.pos.startLine
-    return Math.abs(current.start.index - vim.cursor.pos.startIndex) < Math.abs(closest.start.index - vim.cursor.pos.startIndex) ? current : closest;
+    //BUG: always prioritze brackets left of cursor as you are already in a pair
+    let closestDistance = Math.abs(closest.start.index - vim.cursor.pos.startIndex) +
+      Math.abs(closest.start.line - vim.cursor.pos.startLine);
+    let currentDistance = Math.abs(current.start.index - vim.cursor.pos.startIndex) +
+      Math.abs(current.start.line - vim.cursor.pos.startLine);
+
+    return currentDistance < closestDistance ? current : closest;
   });
 
   return {

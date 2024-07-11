@@ -3,6 +3,12 @@ import { Challenge } from "../types/types";
 export const challenges: Challenge[] = [
   {
     strokes: 1,
+    description: "Remove char under cursor",
+    content: "Once upon a time\nThere was a little pig named Percy\nPercy loved adventures\nOne day, he found a map\nThe map was very old and tattered\nBut it showed a path to a hidden treasure\nPercy's heart raced with excitement\nHe couldn't wait to follow the map\nPercy knew it would be dangerous\nBut he was ready for the adventure\nHe packed his bag and set off\nWith determination in his eyes\nHe traveled through forests and over mountains\nFacing many challenges along the way\nBut he never gave up\nAnd kept moving forward",
+    expected: "nce upon a time\nThere was a little pig named Percy\nPercy loved adventures\nOne day, he found a map\nThe map was very old and tattered\nBut it showed a path to a hidden treasure\nPercy's heart raced with excitement\nHe couldn't wait to follow the map\nPercy knew it would be dangerous\nBut he was ready for the adventure\nHe packed his bag and set off\nWith determination in his eyes\nHe traveled through forests and over mountains\nFacing many challenges along the way\nBut he never gave up\nAnd kept moving forward",
+  },
+  {
+    strokes: 1,
     description: "Delete line 1",
     content: "Once upon a time\nThere was a little pig named Percy\nPercy loved adventures\nOne day, he found a map\nThe map was very old and tattered\nBut it showed a path to a hidden treasure\nPercy's heart raced with excitement\nHe couldn't wait to follow the map\nPercy knew it would be dangerous\nBut he was ready for the adventure\nHe packed his bag and set off\nWith determination in his eyes\nHe traveled through forests and over mountains\nFacing many challenges along the way\nBut he never gave up\nAnd kept moving forward",
     expected: "There was a little pig named Percy\nPercy loved adventures\nOne day, he found a map\nThe map was very old and tattered\nBut it showed a path to a hidden treasure\nPercy's heart raced with excitement\nHe couldn't wait to follow the map\nPercy knew it would be dangerous\nBut he was ready for the adventure\nHe packed his bag and set off\nWith determination in his eyes\nHe traveled through forests and over mountains\nFacing many challenges along the way\nBut he never gave up\nAnd kept moving forward"
@@ -88,6 +94,14 @@ export const challenges: Challenge[] = [
     expected: "Spelling is important"
   },
   {
+    strokes: 2,
+    description: "Visual select around ''",
+    content: "'Once' upon a time\nThere was a little pig named Percy\nPercy loved adventures\nOne day, he found a map\nThe map was very old and tattered\nBut it showed a path to a hidden treasure\nPercy's heart raced with excitement\nHe couldn't wait to follow the map\nPercy knew it would be dangerous\nBut he was ready for the adventure\nHe packed his bag and set off\nWith determination in his eyes\nHe traveled through forests and over mountains\nFacing many challenges along the way\nBut he never gave up\nAnd kept moving forward",
+    expected: vim => {
+      return vim.mode === "Visual" && vim.cursor.pos.startIndex === 0 && vim.cursor.pos.endIndex === 5
+    }
+  },
+  {
     strokes: 1,
     description: "Move 5 chars right",
     content: "With the treasure found\nThey returned home\nTheir adventure was complete\nBut memories would last forever\nThey shared the treasure\nWith everyone in their village\nTheir story inspired many\nTo pursue their own adventures\nThey became legends in their own right\nPercy's name was known far and wide\nFor his bravery and leadership\nHe proved that with determination\nAnd good friends by your side\nYou can achieve anything\nTheir journey was over\nBut their legacy would live on\nIn the hearts of those who heard their talePercy was a brave pig\nHe loved discovering new places\nHis friends admired his courage\nThey often followed him on adventures\nPercy never shied away from a challenge\nHe believed in facing fears head-on\nEvery new place he discovered\nBrought him immense joy\nHe had a natural sense of direction\nWhich always amazed his friends\nThey trusted him completely\nAnd were always ready to follow\nNo matter how tough the journey\nPercy's leadership shone through\nTogether, they created unforgettable memories\nAnd shared countless joyous moments",
@@ -102,5 +116,13 @@ export const challenges: Challenge[] = [
     expected: (vim) => {
       return vim.cursor.pos.startLine === 8
     },
-  }
+  },
+  {
+    strokes: 2,
+    description: "Visual select inside \"\"",
+    content: "\"Once\" upon a time\nThere was a little pig named Percy\nPercy loved adventures\nOne day, he found a map\nThe map was very old and tattered\nBut it showed a path to a hidden treasure\nPercy's heart raced with excitement\nHe couldn't wait to follow the map\nPercy knew it would be dangerous\nBut he was ready for the adventure\nHe packed his bag and set off\nWith determination in his eyes\nHe traveled through forests and over mountains\nFacing many challenges along the way\nBut he never gave up\nAnd kept moving forward",
+    expected: vim => {
+      return vim.mode === "Visual" && vim.cursor.pos.startIndex === 1 && vim.cursor.pos.endIndex === 4
+    }
+  },
 ]

@@ -1,5 +1,5 @@
 import { VirtualItem } from "@tanstack/react-virtual"
-import styled, { keyframes } from "styled-components";
+import styled, { css, keyframes } from "styled-components";
 import { draculaTheme } from "../theme/dracula";
 import { Vim } from "../../vim-js/vim";
 
@@ -7,8 +7,9 @@ type VirtualLineProps = {
   virtualItem: VirtualItem<Element>;
   content: string[];
   cursorPosition: Vim.CursorPosition
+  mode: Vim.Mode;
 }
-function VirtualLine({ virtualItem, content, cursorPosition }: VirtualLineProps) {
+function VirtualLine({ virtualItem, mode, content, cursorPosition }: VirtualLineProps) {
   const line = content[virtualItem.index]
   const { pre, hl, post } = getHl(cursorPosition, line, virtualItem.index)
   return (
@@ -18,7 +19,7 @@ function VirtualLine({ virtualItem, content, cursorPosition }: VirtualLineProps)
       $line={`${virtualItem.index + 1}`}
       key={virtualItem.key}
     >
-      {pre}<StyledHighlightRange>{hl.at(0) === "" ? " " : hl}</StyledHighlightRange>{post}
+      {pre}<StyledHighlightRange $single={mode === "Normal"}>{hl.at(0) === "" ? " " : hl}</StyledHighlightRange>{post}
     </StyledVirtualLine>
   )
 }
@@ -82,7 +83,15 @@ const blink = keyframes`
   }
 `;
 
-const StyledHighlightRange = styled.span`
+const normalModeCursor = css`
   animation: ${blink} 1s step-end infinite;
 `
 
+const visualSelection = css`
+  background-color: white;
+  color: black;
+`
+
+const StyledHighlightRange = styled.span<{ $single: boolean }>`
+  ${props => (props.$single ? normalModeCursor : visualSelection)};
+`

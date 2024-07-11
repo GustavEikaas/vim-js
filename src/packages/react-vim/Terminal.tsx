@@ -45,7 +45,7 @@ export function Terminal({ vim }: TerminalProps) {
         onKeyDown={(e) => vim.sendKey(e.key, { shift: e.shiftKey, ctrl: e.ctrlKey, alt: e.altKey })}
       >
         <div className="relative w-full" style={{ height: `${rowVirtualizer.getTotalSize()}px` }}>
-          {rowVirtualizer.getVirtualItems().map((virtualItem) => <MemoVirtualLine key={virtualItem.key} virtualItem={virtualItem} cursorPosition={cursorPos} content={content} />)}
+          {rowVirtualizer.getVirtualItems().map((virtualItem) => <MemoVirtualLine key={virtualItem.key} mode={mode} virtualItem={virtualItem} cursorPosition={cursorPos} content={content} />)}
         </div>
       </pre>
       <Lualine mode={mode} sequence={sequence} />
@@ -53,22 +53,3 @@ export function Terminal({ vim }: TerminalProps) {
   )
 }
 
-const CodePreviewContainer = styled.pre`
-  &:focus {
-    outline: none;
-  }
-  background: ${draculaTheme.background};
-  color: ${draculaTheme.foreground};
-  box-sizing: border-box;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
-  overflow: auto;
-  font-family: 'Fira Code', 'Courier New', Courier, monospace;
-  font-size: 14px;
-  line-height: 1.5;
-  white-space: pre;
-  counter-reset: line;
-  position: relative;
-  min-width: 100%;
-  min-height: 50%;
-  `;

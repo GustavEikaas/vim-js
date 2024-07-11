@@ -22,6 +22,16 @@ export const nmap: Vim.Mapping[] = [
     action: (vim) => vim.cursor.setLineNumberNormal(false, 0, "absolute")
   },
   {
+    seq: ["x"],
+    action: (vim) => {
+      const newContent = vim.content
+      const lineIndex = vim.cursor.pos.startLine;
+      const charIndex = vim.cursor.pos.startIndex
+      newContent[lineIndex] = charReplace(newContent[lineIndex], charIndex, "")
+      vim.setContent([...newContent])
+    }
+  },
+  {
     seq: ["r", "*"],
     action: (vim) => {
       const v = vim.sequence.at(-1)

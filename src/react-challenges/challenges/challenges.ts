@@ -3,6 +3,20 @@ import { Challenge } from "../types/types";
 export const challenges: Challenge[] = [
   {
     strokes: 1,
+    description: "Select inner {}",
+    content: `function test(){{\n    let i = 0\n    if(i === 0){\n        console.log("Hi")\n    }else{\n        console.log("Test")\n    }\n}}`,
+    expected: (vim) => {
+      return false
+    }
+  },
+  {
+    strokes: 1,
+    description: "Remove char under cursor",
+    content: "Once{ upon a time\nThere was a little pig named Percy\nPercy loved adventures\nOne day, he found a map\nThe map was very old and tattered\nBut it showed a path to a hidden treasure\nPercy's heart raced with excitement\nHe couldn't wait to follow the map\nPercy knew it would be dangerous\nBut he was ready for the adventure\nHe packed his bag and set off\nWith determination in his eyes\nHe traveled through forests and over mountains\nFacing many challenges along the way\nBut he never gave up\nAnd kept moving forward",
+    expected: "nce upon a time\nThere was a little pig named Percy\nPercy loved adventures\nOne day, he found a map\nThe map was very old and tattered\nBut it showed a path to a hidden treasure\nPercy's heart raced with excitement\nHe couldn't wait to follow the map\nPercy knew it would be dangerous\nBut he was ready for the adventure\nHe packed his bag and set off\nWith determination in his eyes\nHe traveled through forests and over mountains\nFacing many challenges along the way\nBut he never gave up\nAnd kept moving forward",
+  },
+  {
+    strokes: 1,
     description: "Remove char under cursor",
     content: "Once upon a time\nThere was a little pig named Percy\nPercy loved adventures\nOne day, he found a map\nThe map was very old and tattered\nBut it showed a path to a hidden treasure\nPercy's heart raced with excitement\nHe couldn't wait to follow the map\nPercy knew it would be dangerous\nBut he was ready for the adventure\nHe packed his bag and set off\nWith determination in his eyes\nHe traveled through forests and over mountains\nFacing many challenges along the way\nBut he never gave up\nAnd kept moving forward",
     expected: "nce upon a time\nThere was a little pig named Percy\nPercy loved adventures\nOne day, he found a map\nThe map was very old and tattered\nBut it showed a path to a hidden treasure\nPercy's heart raced with excitement\nHe couldn't wait to follow the map\nPercy knew it would be dangerous\nBut he was ready for the adventure\nHe packed his bag and set off\nWith determination in his eyes\nHe traveled through forests and over mountains\nFacing many challenges along the way\nBut he never gave up\nAnd kept moving forward",

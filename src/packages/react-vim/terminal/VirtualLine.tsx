@@ -28,6 +28,9 @@ function VirtualLine({ virtualItem, mode, content, cursorPosition }: VirtualLine
 export const MemoVirtualLine = VirtualLine
 
 function getHl(pos: Vim.CursorPosition, line: string, index: number) {
+  if (index === 7) {
+    // debugger;
+  }
   if (pos.startLine < index && pos.endLine > index) {
     return {
       pre: "",
@@ -37,9 +40,10 @@ function getHl(pos: Vim.CursorPosition, line: string, index: number) {
   }
   if (pos.startLine <= index && pos.endLine >= index) {
     const end = pos.endLine > index ? undefined : pos.endIndex + 1
+    const startIndex = pos.startLine !== pos.endLine && index === pos.endLine ? 0 : pos.startIndex 
     return {
-      pre: line.slice(0, pos.startIndex),
-      hl: line.slice(pos.startIndex, end),
+      pre: line.slice(0, startIndex),
+      hl: line.slice(startIndex, end),
       post: end ? line.slice(end) : ""
     }
   }

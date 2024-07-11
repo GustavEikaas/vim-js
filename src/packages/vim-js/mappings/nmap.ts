@@ -1,5 +1,9 @@
 import { Vim } from "../vim"
 
+function charReplace(content: string, index: number, char: string) {
+  return content.slice(0, index) + char + content.slice(index + 1)
+}
+
 export const nmap: Vim.Mapping[] = [
   {
     seq: ["y", "y"],
@@ -16,6 +20,18 @@ export const nmap: Vim.Mapping[] = [
   {
     seq: ["g", "g"],
     action: (vim) => vim.cursor.setLineNumberNormal(false, 0, "absolute")
+  },
+  {
+    seq: ["r", "*"],
+    action: (vim) => {
+      const v = vim.sequence.at(-1)
+      if (!v?.key || v.key.length > 1) return;
+      const newContent = vim.content
+      const lineIndex = vim.cursor.pos.startLine;
+      const charIndex = vim.cursor.pos.startIndex
+      newContent[lineIndex] = charReplace(newContent[lineIndex], charIndex, v.key)
+      vim.setContent([...newContent])
+    }
   },
   {
     seq: ["h"],

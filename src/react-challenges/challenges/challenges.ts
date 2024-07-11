@@ -71,5 +71,36 @@ export const challenges: Challenge[] = [
     description: "Navigate to end of line 3",
     content: "Percy was a brave pig\nHe loved discovering new places\nHis friends admired his courage\nThey often followed him on adventures\nPercy never shied away from a challenge\nHe believed in facing fears head-on\nEvery new place he discovered\nBrought him immense joy\nHe had a natural sense of direction\nWhich always amazed his friends\nThey trusted him completely\nAnd were always ready to follow\nNo matter how tough the journey\nPercy's leadership shone through\nTogether, they created unforgettable memories\nAnd shared countless joyous moments",
     expected: (vim) => vim.cursor.pos.startLine == 2 && vim.cursor.pos.startIndex == vim.content[2].length - 1
+  },
+  {
+    strokes: 1,
+    description: "Enter Visual block mode",
+    content: "Percy was a brave pig\nHe loved discovering new places\nHis friends admired his courage\nThey often followed him on adventures\nPercy never shied away from a challenge\nHe believed in facing fears head-on\nEvery new place he discovered\nBrought him immense joy\nHe had a natural sense of direction\nWhich always amazed his friends\nThey trusted him completely\nAnd were always ready to follow\nNo matter how tough the journey\nPercy's leadership shone through\nTogether, they created unforgettable memories\nAnd shared countless joyous moments",
+    expected: (vim) => vim.mode === "V-Block"
+  },
+  {
+    strokes: 1,
+    description: "Char replace p with l",
+    content: "Spepling is important",
+    prepare: (vim) => {
+      vim.cursor.setLineIndexNormal(3, "absolute")
+    },
+    expected: "Spelling is important"
+  },
+  {
+    strokes: 1,
+    description: "Move 5 chars right",
+    content: "With the treasure found\nThey returned home\nTheir adventure was complete\nBut memories would last forever\nThey shared the treasure\nWith everyone in their village\nTheir story inspired many\nTo pursue their own adventures\nThey became legends in their own right\nPercy's name was known far and wide\nFor his bravery and leadership\nHe proved that with determination\nAnd good friends by your side\nYou can achieve anything\nTheir journey was over\nBut their legacy would live on\nIn the hearts of those who heard their talePercy was a brave pig\nHe loved discovering new places\nHis friends admired his courage\nThey often followed him on adventures\nPercy never shied away from a challenge\nHe believed in facing fears head-on\nEvery new place he discovered\nBrought him immense joy\nHe had a natural sense of direction\nWhich always amazed his friends\nThey trusted him completely\nAnd were always ready to follow\nNo matter how tough the journey\nPercy's leadership shone through\nTogether, they created unforgettable memories\nAnd shared countless joyous moments",
+    expected: (vim) => {
+      return vim.cursor.pos.startIndex === 5
+    },
+  },
+  {
+    strokes: 1,
+    description: "Move 8 lines down",
+    content: "With the treasure found\nThey returned home\nTheir adventure was complete\nBut memories would last forever\nThey shared the treasure\nWith everyone in their village\nTheir story inspired many\nTo pursue their own adventures\nThey became legends in their own right\nPercy's name was known far and wide\nFor his bravery and leadership\nHe proved that with determination\nAnd good friends by your side\nYou can achieve anything\nTheir journey was over\nBut their legacy would live on\nIn the hearts of those who heard their talePercy was a brave pig\nHe loved discovering new places\nHis friends admired his courage\nThey often followed him on adventures\nPercy never shied away from a challenge\nHe believed in facing fears head-on\nEvery new place he discovered\nBrought him immense joy\nHe had a natural sense of direction\nWhich always amazed his friends\nThey trusted him completely\nAnd were always ready to follow\nNo matter how tough the journey\nPercy's leadership shone through\nTogether, they created unforgettable memories\nAnd shared countless joyous moments",
+    expected: (vim) => {
+      return vim.cursor.pos.startLine === 8
+    },
   }
 ]

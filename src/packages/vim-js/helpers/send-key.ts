@@ -1,32 +1,25 @@
 import { Vim, WildcardPayload } from "../vim";
 
 type Args = Parameters<Vim["sendKey"]>
-
-const getMap = (mode: Vim.Mode, vim: Vim) => {
-  switch (mode) {
-    case "Normal":
-      return vim.nMap
-
-    case "Insert":
-      return vim.iMap
-
-    case "Visual":
-    case "V-Block":
-      return vim.vMap
+const ignoreKeys = ["Control", "Shift", "Alt", "AltGraph"]
+export function registerKey(vim: Vim, [key, modifiers]: Args, onExecuted: VoidFunction) {
+  if (ignoreKeys.includes(key)) {
+    return;
   }
-}
-
-function somePartialMappings(vim: Vim, map: Vim.Mapping[], range: number | false) {
-  const lastKeys = range ? vim.sequence.slice(range.toString().length) : vim.sequence
-  const res = map.some(mapping => {
-    return lastKeys.every((value, i) => mapping.seq[i] === value.key && (!range || mapping.wildcards?.includes("range")))
-  })
-  return res;
+  vim.appendSequence({ key, ...modifiers })
+  handleKeyPress(vim, onExecuted)
 }
 
 const handleKeyPress = (vim: Vim, onExecuted: VoidFunction) => {
   const keyMap = getMap(vim.mode, vim)
-  const result = matchMappings(keyMap, vim)
+
+  const range = tryGetRange(vim)
+  if (range && range.isFull) {
+    //Sequence so far is just a number
+    return
+  }
+
+  const result = tryGetMatchingMappings(keyMap, vim, range ? range.range : false)
 
   if (typeof result === "number") {
     return;
@@ -45,61 +38,83 @@ const handleKeyPress = (vim: Vim, onExecuted: VoidFunction) => {
   }
   const mapping = result.matches[0]
 
-  executeMapping(mapping.mapping, mapping.wildcard ?? {}, vim)
+  mapping.mapping?.action(vim, mapping.wildcard)
   onExecuted()
   vim.clearSequence()
 }
 
-const ignoreKeys = ["Control", "Shift", "Alt", "AltGraph"]
-export function sendKey(vim: Vim, [key, modifiers]: Args, onExecuted: VoidFunction) {
-  if (ignoreKeys.includes(key)) {
-    return;
-  }
-  vim.appendSequence({ key, ...modifiers })
-  handleKeyPress(vim, onExecuted)
-}
+function somePartialMappings(vim: Vim, map: Vim.Mapping[], range: number | false) {
+  const lastKeys = range ? vim.sequence.slice(range.toString().length) : vim.sequence
 
-function tryMatchSequence(mapping: Vim.Mapping, keys: Vim.SequenceHistory[], range: number | undefined): false | { mapping: Vim.Mapping, wildcard: WildcardPayload } {
-  if (range && !mapping.wildcards?.includes("range")) {
-    return false;
-  }
-
-  const reversed = mapping.seq.toReversed()
-  const reversedKeys = keys.toReversed()
-
-  const isValidMapping = reversed.every((seqDef, i) => {
-
-    // No modifiers
-    if (!seqDef.includes("<")) {
-      const keyEvent = reversedKeys.at(i)
-      return seqDef === keyEvent?.key && !keyEvent.ctrl && !keyEvent.alt
-    }
-    const isCtrl = seqDef.includes("C-") ? reversedKeys.at(i)?.ctrl : true;
-    const isShift = seqDef.includes("S-") ? reversedKeys.at(i)?.shift : true;
-    const isAlt = seqDef.includes("A-") ? reversedKeys.at(i)?.alt : true;
-
-    return seqDef.at(-2) === reversedKeys.at(i)?.key && isShift && isCtrl && isAlt
+  return map.some(mapping => {
+    return lastKeys.every((value, i) => {
+      const char = mapping.seq[i]
+      return isKeyEqual(char, value) && (!range || mapping.wildcards?.includes("range"))
+    })
   })
-
-  if (!isValidMapping) return false;
-
-  return { mapping, wildcard: {} };
 }
+
+function tryGetMapping(mapping: Vim.Mapping, keys: Vim.SequenceHistory[], range: number | undefined): false | { mapping: Vim.Mapping, wildcard: WildcardPayload } {
+  const mappingSequence = mapping.seq
+  const lastKeysNoRange = keys.slice(range?.toString().length)
+
+  const isValidMapping = (!range || mapping.wildcards?.includes("range")) && mappingSequence.every((seqDef, i) => isKeyEqual(seqDef, lastKeysNoRange[i]))
+
+  return isValidMapping ? { mapping, wildcard: { range } } : false
+}
+
+function isKeyEqual(mappingSeqPart: string, sequenceKey: Vim.SequenceHistory | undefined): boolean {
+  if (!sequenceKey) return false;
+  if (!mappingSeqPart.includes("<")) {
+    return (mappingSeqPart === sequenceKey?.key || mappingSeqPart === "*") && !sequenceKey.ctrl && !sequenceKey.alt
+  }
+
+  const isCtrl = mappingSeqPart.includes("C-") ? sequenceKey.ctrl : true;
+  const isShift = mappingSeqPart.includes("S-") ? sequenceKey.shift : true;
+  const isAlt = mappingSeqPart.includes("A-") ? sequenceKey.alt : true;
+
+  //<C-S-r>
+  const ack = mappingSeqPart.at(-2)
+  if (!ack) return false
+  return (ack === sequenceKey?.key || ack === "*") && isShift && isCtrl && isAlt
+}
+
 
 type MappingMatch = {
   mapping: Vim.Mapping;
   wildcard: WildcardPayload;
 }
-function executeMapping(mapping: Vim.Mapping, modifier: WildcardPayload, vim: Vim) {
-  mapping?.action(vim, modifier)
-  vim.sequence = []
+
+function tryGetMatchingMappings(map: Vim.Mapping[], vim: Vim, range: number | false): number | { matches: MappingMatch[], range: false | number } {
+  const init = {
+    found: false,
+  } as {
+    found: boolean;
+    matches?: MappingMatch[]
+  }
+
+  const value = map.reduce((res, curr) => {
+    const match = tryGetMapping(curr, vim.sequence, range ? range : undefined)
+    if (match) {
+      return {
+        found: true,
+        matches: [match].concat(res.matches ?? [])
+      }
+    }
+    return res;
+  }, init)
+
+  return {
+    range: range,
+    matches: value.matches ?? []
+  }
 }
 
 type SearchRange = {
   isFull: boolean;
   range: number;
 }
-function tryGetRange(vim: Vim): false | { isFull: boolean; range: number } {
+function tryGetRange(vim: Vim): false | SearchRange {
   const range = vim.sequence.reduce((acc, curr, index, list) => {
     const possibleNumber = Number(curr.key)
     /**
@@ -116,32 +131,17 @@ function tryGetRange(vim: Vim): false | { isFull: boolean; range: number } {
   return range
 }
 
-function matchMappings(map: Vim.Mapping[], vim: Vim): number | { matches: MappingMatch[], range: false | number } {
-  const range = tryGetRange(vim)
-  if (range && range.isFull) {
-    return range.range
-  }
+const getMap = (mode: Vim.Mode, vim: Vim) => {
+  switch (mode) {
+    case "Normal":
+      return vim.nMap
 
-  const init = {
-    found: false,
-  } as {
-    found: boolean;
-    matches?: MappingMatch[]
-  }
+    case "Insert":
+      return vim.iMap
 
-  const value = map.reduce((res, curr) => {
-    const match = tryMatchSequence(curr, vim.sequence, range ? range.range : undefined)
-    if (match) {
-      return {
-        found: true,
-        matches: [match].concat(res.matches ?? [])
-      }
-    }
-    return res;
-  }, init)
-
-  return {
-    range: range ? range.range : false,
-    matches: value.matches ? value.matches.map(s => ({ ...s, wildcard: { range: range ? range.range : undefined } })) : []
+    case "Visual":
+    case "V-Block":
+      return vim.vMap
   }
 }
+

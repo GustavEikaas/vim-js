@@ -6,7 +6,7 @@ import { incrementLineNumber } from "./helpers/increment-line-number";
 import { paste, pasteBefore } from "./helpers/paste";
 import { prependContent } from "./helpers/prepend-content";
 import { prependLine } from "./helpers/prepend-line";
-import { sendKey } from "./helpers/send-key";
+import { registerKey } from "./helpers/send-key";
 import { setLineIndexNormal } from "./helpers/set-line-index";
 import { setMode } from "./helpers/set-mode";
 import { createSubscriptionChannel } from "./helpers/subscribe";
@@ -127,7 +127,7 @@ export const createVimInstance = (): Readonly<Vim> => {
     nMap: nmap,
     vMap: vmap,
     iMap: imap,
-    sendKey: (key, modifiers) => sendKey(vim, [key, modifiers], () => notify({ event: "OnMappingExecuted", data: {} }))
+    sendKey: (key, modifiers) => registerKey(vim, [key, modifiers], () => notify({ event: "OnMappingExecuted", data: {} }))
   }
 
   const undoRegister = {

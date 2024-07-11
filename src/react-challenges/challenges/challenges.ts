@@ -71,5 +71,20 @@ export const challenges: Challenge[] = [
     description: "Navigate to end of line 3",
     content: "Percy was a brave pig\nHe loved discovering new places\nHis friends admired his courage\nThey often followed him on adventures\nPercy never shied away from a challenge\nHe believed in facing fears head-on\nEvery new place he discovered\nBrought him immense joy\nHe had a natural sense of direction\nWhich always amazed his friends\nThey trusted him completely\nAnd were always ready to follow\nNo matter how tough the journey\nPercy's leadership shone through\nTogether, they created unforgettable memories\nAnd shared countless joyous moments",
     expected: (vim) => vim.cursor.pos.startLine == 2 && vim.cursor.pos.startIndex == vim.content[2].length - 1
+  },
+  {
+    strokes: 1,
+    description: "Enter Visual block mode",
+    content: "Percy was a brave pig\nHe loved discovering new places\nHis friends admired his courage\nThey often followed him on adventures\nPercy never shied away from a challenge\nHe believed in facing fears head-on\nEvery new place he discovered\nBrought him immense joy\nHe had a natural sense of direction\nWhich always amazed his friends\nThey trusted him completely\nAnd were always ready to follow\nNo matter how tough the journey\nPercy's leadership shone through\nTogether, they created unforgettable memories\nAnd shared countless joyous moments",
+    expected: (vim) => vim.mode === "V-Block"
+  },
+  {
+    strokes: 1,
+    description: "Char replace p with l",
+    content: "Spepling is important",
+    prepare: (vim) => {
+      vim.cursor.setLineIndexNormal(3, "absolute")
+    },
+    expected: "Spelling is important"
   }
 ]

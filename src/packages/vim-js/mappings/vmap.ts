@@ -1,6 +1,20 @@
 import { vSelectQuote } from "../helpers/v-select-quote"
 import { Vim } from "../vim"
 
+function selectInner(vim: Vim, left: string, right: string) {
+  const b = bracketPair(vim, left, right)
+  if (!b) {
+    return;
+  }
+  vim.setCursorPosition({
+    startLine: b.start.line,
+    startIndex: b.start.index,
+    endLine: b.end.line,
+    endIndex: b.end.index,
+    offset: 0
+  })
+}
+
 function lineIndex(line: string, char: string) {
   const i = line.indexOf(char)
   if (i !== -1) {
@@ -44,15 +58,15 @@ const searchLines = (lines: string[], char: string) => {
   return position;
 }
 
-function bracketPair(vim: Vim): BracketPairMatch | undefined {
-  const startIndex = getStartIndex(vim, "{")
-  if (!startIndex) {
-    return
-  }
+function bracketPair(vim: Vim, left: string, right: string): BracketPairMatch | undefined {
+  // const startIndex = getStartIndex(vim, "{")
+  // if (!startIndex) {
+  // return
+  // }
 
   //RIP performance
   const fullContent = vim.content.join("\n")
-  const allBracketPairs = findMatchingBraces(fullContent)
+  const allBracketPairs = findMatchingBraces(fullContent, left, right)
 
   const closestBracketPairsOnSameLine = findClosestBracket(vim, allBracketPairs)
   console.log("choices", closestBracketPairsOnSameLine)
@@ -130,16 +144,16 @@ type BracketPairMatch = {
   end: BracketMatch;
 }
 
-function findMatchingBraces(str: string) {
+function findMatchingBraces(str: string, left: string, right: string) {
   const stack: BracketMatch[] = [];
   const pairs: { start: BracketMatch, end: BracketMatch }[] = [];
   let line = 0
   let indexOffset = 0;
 
   for (let i = 0; i < str.length; i++) {
-    if (str[i] === '{') {
+    if (str[i] === left) {
       stack.push({ index: i - indexOffset, line });
-    } else if (str[i] === '}') {
+    } else if (str[i] === right) {
       if (stack.length === 0) {
         // Unmatched closing brace, continue
         continue;
@@ -150,7 +164,6 @@ function findMatchingBraces(str: string) {
       }
       pairs.push({ start, end: { index: i - indexOffset, line } });
     } else if (str[i] === "\n") {
-      // debugger;
       line++
       indexOffset = i + 1
     }
@@ -244,28 +257,17 @@ export const vmap: Vim.Mapping[] = [
 
         case "{":
         case "}":
-          const b = bracketPair(vim)
-          console.log(b)
-          if (!b) {
-            return;
-          }
-          vim.setCursorPosition({
-            startLine: b.start.line,
-            startIndex: b.start.index,
-            endLine: b.end.line,
-            endIndex: b.end.index,
-            offset: 0
-          })
+          selectInner(vim, "{", "}")
           break;
 
         case "(":
         case ")":
-          console.log("not implemented")
+          selectInner(vim, "(", ")")
           break;
 
         case "[":
         case "]":
-          console.log("not implemented")
+          selectInner(vim, "[", "]")
           break;
       }
 

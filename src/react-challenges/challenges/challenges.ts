@@ -2,6 +2,15 @@ import { Challenge } from "../types/types";
 
 export const challenges: Challenge[] = [
   {
+    strokes: 2,
+    description: "Select line 1",
+    content: "{Once upon a time}\nThere was a little {pig} named Percy\nPercy loved adventures\nOne day, he found a map\nThe map was very old and tattered\nBut it showed a path to a hidden treasure\nPercy's heart raced with excitement\nHe couldn't wait to follow the map\nPercy knew it would be dangerous\nBut he was ready for the adventure\nHe packed his bag and set off\nWith determination in his eyes\nHe traveled through forests and over mountains\nFacing many challenges along the way\nBut he never gave up\nAnd kept moving forward",
+    expected: vim => {
+      const { pos } = vim.cursor
+      return pos.startLine === 0 && pos.endLine === 0 && pos.startIndex === 0 && pos.endIndex === 15
+    }
+  },
+  {
     strokes: 1,
     description: "Remove char under cursor",
     content: "Once upon a time\nThere was a little pig named Percy\nPercy loved adventures\nOne day, he found a map\nThe map was very old and tattered\nBut it showed a path to a hidden treasure\nPercy's heart raced with excitement\nHe couldn't wait to follow the map\nPercy knew it would be dangerous\nBut he was ready for the adventure\nHe packed his bag and set off\nWith determination in his eyes\nHe traveled through forests and over mountains\nFacing many challenges along the way\nBut he never gave up\nAnd kept moving forward",

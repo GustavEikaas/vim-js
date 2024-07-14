@@ -1,7 +1,28 @@
+import { getInnerPos } from "../helpers/get-inner-pos"
 import { Vim } from "../vim"
 
 function charReplace(content: string, index: number, char: string) {
   return content.slice(0, index) + char + content.slice(index + 1)
+}
+
+function changeInner(vim: Vim) {
+  const pos = getInnerPos(vim, "{", "}")
+  if (!pos) return
+  const startContent = vim.content.slice(0, pos.startLine)
+  const endContent = vim.content.slice(pos.endLine + 1)
+
+  const startLine = vim.content.at(pos.startLine)!.slice(0, pos.startIndex)
+  const endline = vim.content.at(pos.endLine)!.slice(pos.endIndex + 1)
+  const r = pos.startLine === pos.endLine ? [startLine + endline] : [startLine, endline]
+  vim.setContent(startContent.concat(r).concat(endContent))
+  vim.setCursorPosition({
+    startLine: pos.startLine,
+    startIndex: pos.startIndex,
+    endLine: pos.startLine,
+    endIndex: pos.startIndex,
+    offset: 0
+  })
+  vim.setMode("Insert")
 }
 
 export const nmap: Vim.Mapping[] = [
@@ -137,5 +158,39 @@ export const nmap: Vim.Mapping[] = [
   {
     seq: ["<C-S-Q>"],
     action: (vim) => vim.setMode("V-Block")
+  },
+  {
+    //viw vi" vi' vi` vi{ vi( vi[
+    seq: ["c", "i", "*"],
+    action: (vim) => {
+      const key = vim.sequence.at(-1)?.key
+      if (!key) return;
+      switch (key) {
+
+        case `"`:
+        case "'":
+        case "`":
+          break;
+
+        case "w":
+          console.log("not implemented")
+          break;
+
+        case "{":
+        case "}":
+          changeInner(vim)
+          break;
+
+        case "(":
+        case ")":
+          break;
+
+        case "[":
+        case "]":
+          break;
+      }
+
+      return;
+    }
   }
 ]

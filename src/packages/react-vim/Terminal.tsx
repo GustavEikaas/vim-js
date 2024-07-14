@@ -1,7 +1,5 @@
 import { useLayoutEffect, useRef, useState } from "react"
 import { useVim } from './hooks/useVim'
-import styled from 'styled-components';
-import { draculaTheme } from "./theme/dracula";
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { Lualine } from "./terminal/Lualine";
 import { MemoVirtualLine } from "./terminal/VirtualLine";

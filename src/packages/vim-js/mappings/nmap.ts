@@ -147,6 +147,10 @@ export const nmap: Vim.Mapping[] = [
     }
   },
   {
+    seq: ["V"],
+    action: vim => vim.setMode("V-Line")
+  },
+  {
     seq: ["v"],
     action: vim => vim.setMode("Visual")
   },

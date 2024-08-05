@@ -1,7 +1,7 @@
 import { Vim, WildcardPayload } from "../vim";
 
 type Args = Parameters<Vim["sendKey"]>
-const ignoreKeys = ["Control", "Shift", "Alt", "AltGraph", "Dead"]
+const ignoreKeys = ["Control", "Shift", "Alt", "AltGraph"]
 export function registerKey(vim: Vim, [key, modifiers]: Args, onExecuted: VoidFunction) {
   if (ignoreKeys.includes(key)) {
     return;
@@ -140,6 +140,7 @@ const getMap = (mode: Vim.Mode, vim: Vim) => {
       return vim.iMap
 
     case "Visual":
+    case "V-Line":
     case "V-Block":
       return vim.vMap
   }

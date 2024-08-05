@@ -92,6 +92,33 @@ export const nmap: Vim.Mapping[] = [
     }
   },
   {
+    seq: ["_"],
+    action: vim => {
+      const [line] = vim.getCurrentLine()
+      const chars = new Array(...line)
+      const firstCharWithoutWhitespace = chars.findIndex(s => s !== " ")
+      if (firstCharWithoutWhitespace === -1) {
+        return
+      }
+      vim.cursor.setLineIndexNormal(firstCharWithoutWhitespace, "absolute")
+
+    }
+  },
+  {
+    seq: ["-"],
+    action: vim => {
+      vim.cursor.setLineNumberNormal(false, -1)
+      const [line] = vim.getCurrentLine()
+      const chars = new Array(...line)
+      const firstCharWithoutWhitespace = chars.findIndex(s => s !== " ")
+      if (firstCharWithoutWhitespace === -1) {
+        return
+      }
+      vim.cursor.setLineIndexNormal(firstCharWithoutWhitespace, "absolute")
+
+    }
+  },
+  {
     seq: ["0"],
     action: vim => vim.cursor.setLineIndexNormal(0, "absolute")
   },

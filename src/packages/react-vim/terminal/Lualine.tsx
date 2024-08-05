@@ -7,6 +7,7 @@ const getVimModeColor = (mode: Vim.Mode) => {
     case "Insert":
       return "bg-green"
     case "Visual":
+    case "V-Line":
     case "V-Block":
       return "bg-yellow"
   }

@@ -80,6 +80,18 @@ export const nmap: Vim.Mapping[] = [
     action: vim => vim.undoContentChange()
   },
   {
+    seq: ["^"],
+    action: vim => {
+      const [line] = vim.getCurrentLine()
+      const chars = new Array(...line)
+      const firstCharWithoutWhitespace = chars.findIndex(s => s !== " ")
+      if (firstCharWithoutWhitespace === -1) {
+        return
+      }
+      vim.cursor.setLineIndexNormal(firstCharWithoutWhitespace, "absolute")
+    }
+  },
+  {
     seq: ["0"],
     action: vim => vim.cursor.setLineIndexNormal(0, "absolute")
   },

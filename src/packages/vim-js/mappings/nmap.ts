@@ -44,6 +44,38 @@ export const nmap: Vim.Mapping[] = [
     }
   },
   {
+    seq: ["ArrowLeft"],
+    wildcards: ["range"],
+    action: (vim, modifier) => {
+      const count = modifier.range ?? 1
+      vim.cursor.setLineIndexNormal(-count)
+    }
+  },
+  {
+    seq: ["ArrowDown"],
+    wildcards: ["range"],
+    action: (vim, modifier) => {
+      const count = modifier.range ?? 1
+      vim.cursor.setLineNumberNormal(false, count)
+    }
+  },
+  {
+    seq: ["ArrowUp"],
+    wildcards: ["range"],
+    action: (vim, modifier) => {
+      const count = modifier.range ?? 1
+      vim.cursor.setLineNumberNormal(false, -count)
+    }
+  },
+  {
+    seq: ["ArrowRight"],
+    wildcards: ["range"],
+    action: (vim, modifier) => {
+      const count = modifier.range ?? 1
+      vim.cursor.setLineIndexNormal(count)
+    }
+  },
+  {
     seq: ["h"],
     wildcards: ["range"],
     action: (vim, modifier) => {

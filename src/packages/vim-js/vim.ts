@@ -172,7 +172,7 @@ function isValidCursorPosition(cursorPosition: Vim.CursorPosition, vim: Vim): bo
 
 export namespace Vim {
   /** The different vim modes*/
-  export type Mode = "Normal" | "Insert" | "Visual" | "V-Block"
+  export type Mode = "Normal" | "Insert" | "Visual" | "V-Block" | "V-Line"
 
   /**
    * A vim keymapping

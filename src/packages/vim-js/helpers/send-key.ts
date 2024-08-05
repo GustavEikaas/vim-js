@@ -140,6 +140,7 @@ const getMap = (mode: Vim.Mode, vim: Vim) => {
       return vim.iMap
 
     case "Visual":
+    case "V-Line":
     case "V-Block":
       return vim.vMap
   }

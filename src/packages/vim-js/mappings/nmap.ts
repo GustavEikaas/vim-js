@@ -15,7 +15,15 @@ export const nmap: Vim.Mapping[] = [
   },
   {
     seq: ["G"],
-    action: (vim) => vim.cursor.setLineNumberNormal(false, -1, "absolute")
+    wildcards: ["range"],
+    action: (vim, wildcard) => {
+      if (wildcard.range && wildcard.range <= vim.content.length) {
+        vim.cursor.setLineNumberNormal(false, wildcard.range - 1, "absolute")
+      } else {
+
+        vim.cursor.setLineNumberNormal(false, -1, "absolute")
+      }
+    }
   },
   {
     seq: ["g", "g"],
@@ -41,6 +49,38 @@ export const nmap: Vim.Mapping[] = [
       const charIndex = vim.cursor.pos.startIndex
       newContent[lineIndex] = charReplace(newContent[lineIndex], charIndex, v.key)
       vim.setContent([...newContent])
+    }
+  },
+  {
+    seq: ["ArrowLeft"],
+    wildcards: ["range"],
+    action: (vim, modifier) => {
+      const count = modifier.range ?? 1
+      vim.cursor.setLineIndexNormal(-count)
+    }
+  },
+  {
+    seq: ["ArrowDown"],
+    wildcards: ["range"],
+    action: (vim, modifier) => {
+      const count = modifier.range ?? 1
+      vim.cursor.setLineNumberNormal(false, count)
+    }
+  },
+  {
+    seq: ["ArrowUp"],
+    wildcards: ["range"],
+    action: (vim, modifier) => {
+      const count = modifier.range ?? 1
+      vim.cursor.setLineNumberNormal(false, -count)
+    }
+  },
+  {
+    seq: ["ArrowRight"],
+    wildcards: ["range"],
+    action: (vim, modifier) => {
+      const count = modifier.range ?? 1
+      vim.cursor.setLineIndexNormal(count)
     }
   },
   {
@@ -80,6 +120,45 @@ export const nmap: Vim.Mapping[] = [
     action: vim => vim.undoContentChange()
   },
   {
+    seq: ["^"],
+    action: vim => {
+      const [line] = vim.getCurrentLine()
+      const chars = new Array(...line)
+      const firstCharWithoutWhitespace = chars.findIndex(s => s !== " ")
+      if (firstCharWithoutWhitespace === -1) {
+        return
+      }
+      vim.cursor.setLineIndexNormal(firstCharWithoutWhitespace, "absolute")
+    }
+  },
+  {
+    seq: ["_"],
+    action: vim => {
+      const [line] = vim.getCurrentLine()
+      const chars = new Array(...line)
+      const firstCharWithoutWhitespace = chars.findIndex(s => s !== " ")
+      if (firstCharWithoutWhitespace === -1) {
+        return
+      }
+      vim.cursor.setLineIndexNormal(firstCharWithoutWhitespace, "absolute")
+
+    }
+  },
+  {
+    seq: ["-"],
+    action: vim => {
+      vim.cursor.setLineNumberNormal(false, -1)
+      const [line] = vim.getCurrentLine()
+      const chars = new Array(...line)
+      const firstCharWithoutWhitespace = chars.findIndex(s => s !== " ")
+      if (firstCharWithoutWhitespace === -1) {
+        return
+      }
+      vim.cursor.setLineIndexNormal(firstCharWithoutWhitespace, "absolute")
+
+    }
+  },
+  {
     seq: ["0"],
     action: vim => vim.cursor.setLineIndexNormal(0, "absolute")
   },
@@ -106,6 +185,10 @@ export const nmap: Vim.Mapping[] = [
       vim.cursor.setLineIndexNormal(0, "absolute")
       vim.setMode("Insert")
     }
+  },
+  {
+    seq: ["V"],
+    action: vim => vim.setMode("V-Line")
   },
   {
     seq: ["v"],

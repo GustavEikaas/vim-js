@@ -15,7 +15,15 @@ export const nmap: Vim.Mapping[] = [
   },
   {
     seq: ["G"],
-    action: (vim) => vim.cursor.setLineNumberNormal(false, -1, "absolute")
+    wildcards: ["range"],
+    action: (vim, wildcard) => {
+      if (wildcard.range && wildcard.range <= vim.content.length) {
+        vim.cursor.setLineNumberNormal(false, wildcard.range - 1, "absolute")
+      } else {
+
+        vim.cursor.setLineNumberNormal(false, -1, "absolute")
+      }
+    }
   },
   {
     seq: ["g", "g"],

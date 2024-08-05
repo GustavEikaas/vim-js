@@ -1,4 +1,4 @@
-export type BindingType = "change" | "motion"
+export type BindingType = "change" | "motion" | "visual"
 
 export type Bindings = keyof typeof bindings
 

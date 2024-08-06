@@ -12,7 +12,6 @@ export function Challenges() {
   const [mappingsUsed, setMappingsUsed] = useState(0);
   const challenge = challenges[challengeIndex]
 
-  console.log(challenges)
   if (isFinished) {
     const leastPossibleMappings = challenges.reduce((acc, curr) => acc + curr.strokes, 0 as number)
     return (

@@ -43,20 +43,20 @@ export const bindings = {
     binding: "r",
     type: "change",
   },
-  "<left>": {
-    binding: "arrowleft",
+  "<Left>": {
+    binding: "ArrowLeft",
     type: "motion",
   },
-  "<down>": {
-    binding: "arrowdown",
+  "<Down>": {
+    binding: "ArrowDown",
     type: "motion",
   },
-  "<up>": {
-    binding: "arrowup",
+  "<Up>": {
+    binding: "ArrowUp",
     type: "motion",
   },
-  "<right>": {
-    binding: "arrowright",
+  "<Right>": {
+    binding: "ArrowRight",
     type: "motion",
   },
   h: {

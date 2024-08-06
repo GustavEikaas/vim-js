@@ -221,7 +221,7 @@ export namespace Vim {
      * Sets a line number to the specified count
      * @param resetX - if true sets cursor index to 0
      * @param count - how many times to repeat the operation, defaults to 1
-     * @param mode - relative | absolute, relative performs the operation relative to current position
+     * @param mode - defaults to relative. relative | absolute, relative performs the operation relative to current position.
      * @example
      * ```
      * setLineNumber(false, 1) //Increment line by 1

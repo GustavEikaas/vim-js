@@ -103,6 +103,10 @@ export const bindings = {
     binding: "i",
     type: "motion",
   },
+  V: {
+    binding: "V",
+    type: "visual",
+  },
   v: {
     binding: "v",
     type: "visual",

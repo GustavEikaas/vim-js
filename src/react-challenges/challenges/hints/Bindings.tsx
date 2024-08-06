@@ -3,6 +3,14 @@ export type BindingType = "change" | "motion" | "visual"
 export type Bindings = keyof typeof bindings
 
 export const bindings = {
+  F: {
+    binding: "F",
+    type: "motion",
+  },
+  f: {
+    binding: "f",
+    type: "motion",
+  },
   x: {
     binding: "x",
     type: "change",
@@ -27,24 +35,28 @@ export const bindings = {
     binding: "G",
     type: "motion",
   },
+  g: {
+    binding: "g",
+    type: "motion",
+  },
   r: {
     binding: "r",
     type: "change",
   },
-  "<Left>": {
-    binding: "ArrowLeft",
+  "<left>": {
+    binding: "arrowleft",
     type: "motion",
   },
-  "<Down>": {
-    binding: "ArrowDown",
+  "<down>": {
+    binding: "arrowdown",
     type: "motion",
   },
-  "<Up>": {
-    binding: "ArrowUp",
+  "<up>": {
+    binding: "arrowup",
     type: "motion",
   },
-  "<Right>": {
-    binding: "ArrowRight",
+  "<right>": {
+    binding: "arrowright",
     type: "motion",
   },
   h: {
@@ -91,32 +103,24 @@ export const bindings = {
     binding: "i",
     type: "motion",
   },
-  I: {
-    binding: "I",
-    type: "motion",
-  },
   v: {
     binding: "v",
-    type: "motion",
-  },
-  o: {
-    binding: "o",
-    type: "change",
+    type: "visual",
   },
   O: {
     binding: "O",
     type: "change",
   },
-  P: {
-    binding: "P",
+  o: {
+    binding: "o",
     type: "change",
   },
   p: {
     binding: "p",
     type: "change",
   },
-  "<C-S-Q>": {
-    binding: "<C-S-Q>",
+  "<c-s-q>": {
+    binding: "<c-s-q>",
     type: "motion",
   },
   'a{': {
@@ -175,11 +179,6 @@ export const bindings = {
     binding: 'i`',
     type: "motion"
   },
-  V: {
-    type: "visual",
-    binding: "V"
-  }
-
 } as const;
 
 type BindingProps = {

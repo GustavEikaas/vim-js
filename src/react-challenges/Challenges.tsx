@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Button } from "./components/Button";
-import { challenges } from './challenges/challenges'
+import { getRandomChallenges } from './challenges/challenges'
 import { MappingsUsed } from "./components/MappingsUsed";
 import { VimChallenge } from "./VimChallenge";
 
+const challenges = getRandomChallenges()
 export function Challenges() {
   const [challengeIndex, setChallengeIndex] = useState(0)
   const [animation, setAnimation] = useState(true)
@@ -11,6 +12,7 @@ export function Challenges() {
   const [mappingsUsed, setMappingsUsed] = useState(0);
   const challenge = challenges[challengeIndex]
 
+  console.log(challenges)
   if (isFinished) {
     const leastPossibleMappings = challenges.reduce((acc, curr) => acc + curr.strokes, 0 as number)
     return (

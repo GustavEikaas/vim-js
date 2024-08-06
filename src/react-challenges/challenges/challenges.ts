@@ -3,6 +3,21 @@ import { Challenge } from "../types/types";
 export const challenges: Challenge[] = [
   {
     strokes: 1,
+    description: "Navigate backwards to the character 'o'",
+    content: "Percy lived on a farm\nHe had many friends\nThey often played together\nLife was joyful\nThe farm was large and full of life\nThere were cows, chickens, and horses\nEach day brought new fun and games\nPercy was always the leader\nHe loved organizing adventures\nSometimes they would explore the woods\nOther times they played by the river\nNo matter what they did\nThey always had a great time\nThe bond between Percy and his friends\nWas strong and unbreakable\nThey knew they could rely on each other",
+    prepare: vim => {
+      vim.cursor.setLineIndexNormal(17);
+    },
+    expected: (vim) => vim.cursor.pos.startLine == 0 && vim.cursor.pos.startIndex == 12
+  },
+  {
+    strokes: 1,
+    description: "Navigate to the character 'o'",
+    content: "Percy lived on a farm\nHe had many friends\nThey often played together\nLife was joyful\nThe farm was large and full of life\nThere were cows, chickens, and horses\nEach day brought new fun and games\nPercy was always the leader\nHe loved organizing adventures\nSometimes they would explore the woods\nOther times they played by the river\nNo matter what they did\nThey always had a great time\nThe bond between Percy and his friends\nWas strong and unbreakable\nThey knew they could rely on each other",
+    expected: (vim) => vim.cursor.pos.startLine == 0 && vim.cursor.pos.startIndex == 12
+  },
+  {
+    strokes: 1,
     description: "Remove char under cursor",
     content: "Once upon a time\nThere was a little pig named Percy\nPercy loved adventures\nOne day, he found a map\nThe map was very old and tattered\nBut it showed a path to a hidden treasure\nPercy's heart raced with excitement\nHe couldn't wait to follow the map\nPercy knew it would be dangerous\nBut he was ready for the adventure\nHe packed his bag and set off\nWith determination in his eyes\nHe traveled through forests and over mountains\nFacing many challenges along the way\nBut he never gave up\nAnd kept moving forward",
     expected: "nce upon a time\nThere was a little pig named Percy\nPercy loved adventures\nOne day, he found a map\nThe map was very old and tattered\nBut it showed a path to a hidden treasure\nPercy's heart raced with excitement\nHe couldn't wait to follow the map\nPercy knew it would be dangerous\nBut he was ready for the adventure\nHe packed his bag and set off\nWith determination in his eyes\nHe traveled through forests and over mountains\nFacing many challenges along the way\nBut he never gave up\nAnd kept moving forward",

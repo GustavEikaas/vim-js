@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Button } from "./components/Button";
-import { challenges } from './challenges/challenges'
+import { getRandomChallenges } from './challenges/challenges'
 import { MappingsUsed } from "./components/MappingsUsed";
 import { VimChallenge } from "./VimChallenge";
 
+const challenges = getRandomChallenges()
 export function Challenges() {
   const [challengeIndex, setChallengeIndex] = useState(0)
   const [animation, setAnimation] = useState(true)

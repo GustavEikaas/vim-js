@@ -22,22 +22,6 @@ function lineIndex(line: string, char: string) {
   }
 }
 
-function getStartIndex(vim: Vim, char: string) {
-  const [_, index, all] = vim.getCurrentLine()
-
-  const preLines = all.slice(0, index + 1).toReversed()
-  const before = searchLines(preLines, char)
-  if (before) {
-    return before
-  }
-
-  const afterLines = all.slice(index + 1)
-  const after = searchLines(afterLines, char)
-  if (after) {
-    return after
-  }
-}
-
 const searchLines = (lines: string[], char: string) => {
   const position = lines.reduce((acc, curr, i) => {
     if (acc !== undefined) return acc;
@@ -59,11 +43,6 @@ const searchLines = (lines: string[], char: string) => {
 }
 
 function bracketPair(vim: Vim, left: string, right: string): BracketPairMatch | undefined {
-  // const startIndex = getStartIndex(vim, "{")
-  // if (!startIndex) {
-  // return
-  // }
-
   //RIP performance
   const fullContent = vim.content.join("\n")
   const allBracketPairs = findMatchingBraces(fullContent, left, right)

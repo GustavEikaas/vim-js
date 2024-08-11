@@ -94,7 +94,7 @@ export const challenges: Challenge[] = [
   },
   {
     strokes: 1,
-    hint: ["<c-s-q>"],
+    hint: ["<c-s-q>", "<c-v>"],
     description: "Enter Visual block mode",
     content: "Percy was a brave pig\nHe loved discovering new places\nHis friends admired his courage\nThey often followed him on adventures\nPercy never shied away from a challenge\nHe believed in facing fears head-on\nEvery new place he discovered\nBrought him immense joy\nHe had a natural sense of direction\nWhich always amazed his friends\nThey trusted him completely\nAnd were always ready to follow\nNo matter how tough the journey\nPercy's leadership shone through\nTogether, they created unforgettable memories\nAnd shared countless joyous moments",
     expected: (vim) => vim.mode === "V-Block"

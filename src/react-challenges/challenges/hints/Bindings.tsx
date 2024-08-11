@@ -123,6 +123,10 @@ export const bindings = {
     binding: "p",
     type: "change",
   },
+  "<c-v>": {
+    binding: "<c-v>",
+    type: "motion",
+  },
   "<c-s-q>": {
     binding: "<c-s-q>",
     type: "motion",

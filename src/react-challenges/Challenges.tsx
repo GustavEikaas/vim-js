@@ -29,7 +29,7 @@ export function Challenges() {
   }
 
   return (
-    <div className="h-full flex w-full justify-center items-center flex-col">
+    <div className="flex h-full w-full flex-col items-center justify-center">
       <div>Challenge: {challengeIndex + 1}/{challenges.length}</div>
       <VimChallenge key={challenge.content + challenge.description} onFinished={(mappings) => {
         const inc = () => {
@@ -57,7 +57,7 @@ type AnimationSelectorProps = {
 }
 const AnimationSelector = ({ animation, setAnimation }: AnimationSelectorProps) => {
   return (
-    <div className="flex flex-col absolute bottom-0 right-0">
+    <div className="absolute bottom-0 right-0 flex flex-col">
       Animation
       <span>
         <input type="radio" checked={!!animation} onChange={() => setAnimation(true)} /> Smooth

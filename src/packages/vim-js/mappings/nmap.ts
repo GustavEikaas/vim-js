@@ -255,6 +255,10 @@ export const nmap: Vim.Mapping[] = [
     action: vim => vim.clipboard.paste()
   },
   {
+    seq: ["<C-v>"],
+    action: (vim) => vim.setMode("V-Block")
+  },
+  {
     seq: ["<C-S-Q>"],
     action: (vim) => vim.setMode("V-Block")
   }

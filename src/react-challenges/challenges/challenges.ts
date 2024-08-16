@@ -1,5 +1,6 @@
 import { Challenge } from "../types/types";
 
+export const getRandomChallenges = () => challenges.sort(() => (Math.random() > 0.5) ? -1 : 0)
 
 export const challenges: Challenge[] = [
   {
@@ -93,7 +94,7 @@ export const challenges: Challenge[] = [
   },
   {
     strokes: 1,
-    hint: ["<C-S-Q>"],
+    hint: ["<c-s-q>", "<c-v>"],
     description: "Enter Visual block mode",
     content: "Percy was a brave pig\nHe loved discovering new places\nHis friends admired his courage\nThey often followed him on adventures\nPercy never shied away from a challenge\nHe believed in facing fears head-on\nEvery new place he discovered\nBrought him immense joy\nHe had a natural sense of direction\nWhich always amazed his friends\nThey trusted him completely\nAnd were always ready to follow\nNo matter how tough the journey\nPercy's leadership shone through\nTogether, they created unforgettable memories\nAnd shared countless joyous moments",
     expected: (vim) => vim.mode === "V-Block"
@@ -205,5 +206,22 @@ export const challenges: Challenge[] = [
       const { startLine, startIndex } = vim.cursor.pos
       return startLine === 1 && startIndex === 2
     }
+  },
+  {
+    strokes: 1,
+    hint: ["f"],
+    description: "Navigate to the character 'o'",
+    content: "Percy lived on a farm\nHe had many friends\nThey often played together\nLife was joyful\nThe farm was large and full of life\nThere were cows, chickens, and horses\nEach day brought new fun and games\nPercy was always the leader\nHe loved organizing adventures\nSometimes they would explore the woods\nOther times they played by the river\nNo matter what they did\nThey always had a great time\nThe bond between Percy and his friends\nWas strong and unbreakable\nThey knew they could rely on each other",
+    expected: (vim) => vim.cursor.pos.startLine == 0 && vim.cursor.pos.startIndex == 12
+  },
+  {
+    strokes: 1,
+    hint: ["F"],
+    description: "Navigate backwards to the character 'o'",
+    content: "Percy lived on a farm\nHe had many friends\nThey often played together\nLife was joyful\nThe farm was large and full of life\nThere were cows, chickens, and horses\nEach day brought new fun and games\nPercy was always the leader\nHe loved organizing adventures\nSometimes they would explore the woods\nOther times they played by the river\nNo matter what they did\nThey always had a great time\nThe bond between Percy and his friends\nWas strong and unbreakable\nThey knew they could rely on each other",
+    prepare: vim => {
+      vim.cursor.setLineIndexNormal(17);
+    },
+    expected: (vim) => vim.cursor.pos.startLine == 0 && vim.cursor.pos.startIndex == 12
   }
 ]

@@ -39,6 +39,30 @@ export const nmap: Vim.Mapping[] = [
     }
   },
   {
+    seq: ["F", "*"],
+    action: (vim) => {
+      const v = vim.sequence.at(-1)
+      if (!v?.key || v.key.length > 1) return;
+      const [line] = vim.getCurrentLine()
+      const index = vim.cursor.pos.startIndex
+      const i = line.slice(0, index).lastIndexOf(v.key);
+      if (i === -1) return;
+      vim.cursor.setLineIndexNormal(i, "absolute")
+    }
+  },
+  {
+    seq: ["f", "*"],
+    action: (vim) => {
+      const v = vim.sequence.at(-1)
+      if (!v?.key || v.key.length > 1) return;
+      const index = vim.cursor.pos.startIndex
+      const [line] = vim.getCurrentLine()
+      const i = line.slice(index + 1).indexOf(v.key);
+      if (i === -1) return;
+      vim.cursor.setLineIndexNormal(i + index + 1, "absolute")
+    }
+  },
+  {
     seq: ["r", "*"],
     action: (vim) => {
       const v = vim.sequence.at(-1)
@@ -229,6 +253,10 @@ export const nmap: Vim.Mapping[] = [
   {
     seq: ["p"],
     action: vim => vim.clipboard.paste()
+  },
+  {
+    seq: ["<C-v>"],
+    action: (vim) => vim.setMode("V-Block")
   },
   {
     seq: ["<C-S-Q>"],
